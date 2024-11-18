@@ -113,7 +113,15 @@ function updateProductDropdown() {
     if (editProductSelect) editProductSelect.innerHTML = options;
 }
 
+// Crea los modales para agregar y editar Ordenes
 function createOrderModals() {
+    return `
+        ${createAddOrderModals()}
+        ${createEditOrderModals()}
+    `;
+}
+
+function createAddOrderModals() {
     return `
         <div class="modal fade" id="addOrderModal" tabindex="-1" aria-labelledby="addOrderModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -167,7 +175,11 @@ function createOrderModals() {
                 </div>
             </div>
         </div>
+    `;
+}
 
+function createEditOrderModals() {
+    return `
         <div class="modal fade" id="editOrderModal" tabindex="-1" aria-labelledby="editOrderModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -224,8 +236,23 @@ function createOrderModals() {
 }
 
 function setupOrderEventListeners() {
-    handleFormSubmit('addOrderForm', 'http://localhost:8080/api/ordenes', 'POST', 'Orden agregada exitosamente', fetchOrders);
-    handleFormSubmit('editOrderForm', 'http://localhost:8080/api/ordenes', 'PUT', 'Orden actualizada exitosamente', fetchOrders);
+    handleFormSubmit(
+        'addOrderForm', 
+        'http://localhost:8080/api/ordenes', 
+        'POST', 
+        'Orden agregada exitosamente', 
+        fetchOrders
+    );
+    handleFormSubmit(
+        'editOrderForm',
+        (form) => {
+            const id = form.elements['id'].value; // Obtén el ID del formulario correctamente
+            return `http://localhost:8080/api/ordenes/${id}`;
+        },
+        'PUT', 
+        'Orden actualizada exitosamente', 
+        fetchOrders
+    );
 }
 
 

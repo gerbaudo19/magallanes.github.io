@@ -158,7 +158,10 @@ function createEditClientModal() {
 }
 
 // Configura los event listeners para los formularios
+setupClientEventListeners();
+
 function setupClientEventListeners() {
+    // Para agregar un cliente
     handleFormSubmit(
         'addClientForm',
         'http://localhost:8080/cliente/create',
@@ -167,10 +170,11 @@ function setupClientEventListeners() {
         fetchClients
     );
 
+    // Para editar un cliente
     handleFormSubmit(
         'editClientForm',
         (form) => {
-            const id = form.id.value; // Obtén el ID del formulario
+            const id = form.elements['id'].value; // Obtén el ID del formulario correctamente
             return `http://localhost:8080/cliente/update/${id}`;
         },
         'PUT',
@@ -178,6 +182,8 @@ function setupClientEventListeners() {
         fetchClients
     );
 }
+
+
 
 // Función para abrir modales
 window.openModal = function(modalType) {
@@ -235,4 +241,5 @@ window.deleteClient = function(id) {
         });
     }
 }
+
 

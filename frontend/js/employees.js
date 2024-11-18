@@ -65,7 +65,15 @@ function updateEmployeeTable() {
     }
 }
 
+// Crea los modales para agregar y editar empleados
 function createEmployeeModals() {
+    return `
+        ${createAddEmployeeModals()}
+        ${createEditEmployeeModal()}
+    `;
+}
+
+function createAddEmployeeModals() {
     return `
         <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -122,7 +130,11 @@ function createEmployeeModals() {
                 </div>
             </div>
         </div>
+    `;
+}
 
+function createEditEmployeeModal() {
+    return `
         <div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -162,6 +174,10 @@ function createEmployeeModals() {
                                 <input type="text" class="form-control" id="editEmployeeUsername" name="username" required>
                             </div>
                             <div class="mb-3">
+                                <label for="editEmployeePassword" class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" id="editEmployeePassword" name="password" value="contraseñaActual">
+                            </div>
+                            <div class="mb-3">
                                 <label for="editEmployeeRole" class="form-label">Rol</label>
                                 <select class="form-select" id="editEmployeeRole" name="role" required>
                                     <option value="">Seleccionar rol</option>
@@ -178,9 +194,28 @@ function createEmployeeModals() {
     `;
 }
 
+// Configura los event listeners para los formularios
+setupEmployeeEventListeners();
+
 function setupEmployeeEventListeners() {
-    handleFormSubmit('addEmployeeForm', 'http://localhost:8080/empleado/create', 'POST', 'Empleado agregado con éxito', fetchEmployees);
-    handleFormSubmit('editEmployeeForm', `http://localhost:8080/empleado/update/`, 'PUT', 'Empleado actualizado con éxito', fetchEmployees);
+    handleFormSubmit(
+        'addEmployeeForm', 
+        'http://localhost:8080/empleado/create', 
+        'POST', 
+        'Empleado agregado con éxito', 
+        fetchEmployees
+    );
+
+    handleFormSubmit(
+        'editEmployeeForm',
+        (form) => {
+            const id = form.elements['id'].value;
+            return `http://localhost:8080/empleado/update/${id}`
+        },
+        'PUT', 
+        'Empleado actualizado con éxito', 
+        fetchEmployees
+    );
 }
 
 window.openModal = function(modalType) {
@@ -210,11 +245,15 @@ window.editEmployee = function(id) {
         document.getElementById('editEmployeeUsername').value = employee.username;
         document.getElementById('editEmployeeRole').value = employee.role;
 
+        // No prellenar la contraseña, ya que la contraseña debe ser opcional de editar
+        document.getElementById('editEmployeePassword').value = ''; // Dejar vacío para que el usuario ingrese una nueva si lo desea
+
         openModal('editEmployee');
     } else {
         alert('Empleado no encontrado');
     }
 }
+
 
 window.deleteEmployee = function(id) {
     if (confirm('¿Está seguro de que desea eliminar este empleado?')) {

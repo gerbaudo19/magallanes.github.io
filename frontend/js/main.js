@@ -82,18 +82,24 @@ export function fetchData(url, callback) {
     .catch(error => console.error(`Error fetching data from ${url}:`, error));
 }
 
-export function handleFormSubmit(formId, url, method, successMessage, successCallback) {
+export function handleFormSubmit(formId, urlOrFunc, method, successMessage, successCallback) {
     const form = document.getElementById(formId);
     if (form) {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(form);
             const jsonData = Object.fromEntries(formData.entries());
+            let url;
+            if (typeof urlOrFunc === 'function') {
+                url = urlOrFunc(form);
+            } else {
+                url = urlOrFunc;
+            }
             fetch(url, {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
-                    ...getAuthHeader() // Asegúrate de que esta función retorna un objeto con el encabezado de autorización
+                    ...getAuthHeader() // Incluye el encabezado de autorización
                 },
                 body: JSON.stringify(jsonData)
             })
@@ -113,6 +119,7 @@ export function handleFormSubmit(formId, url, method, successMessage, successCal
         });
     }
 }
+
 
 
 function addLogoutButton() {

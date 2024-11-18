@@ -7,27 +7,27 @@ let orders = [];
 
 export function initDashboard(container) {
     container.innerHTML = `
-        <h2>Dashboard</h2>
+        <h2>Panel de Control</h2>
         <div class="row">
             <div class="col-md-3">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="card-title">System Summary</h5>
+                        <h5 class="card-title">Resumen del sistema</h5>
                         <ul class="list-group">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Total Clients
+                                Total Clientes
                                 <span class="badge bg-primary rounded-pill" id="totalClients">0</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Total Employees
+                                Total Empleados
                                 <span class="badge bg-primary rounded-pill" id="totalEmployees">0</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Total Products
+                                Total Productos
                                 <span class="badge bg-primary rounded-pill" id="totalProducts">0</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Total Orders
+                                Total Ordenes
                                 <span class="badge bg-primary rounded-pill" id="totalOrders">0</span>
                             </li>
                         </ul>
@@ -37,14 +37,14 @@ export function initDashboard(container) {
             <div class="col-md-9">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="card-title">Recent Orders</h5>
+                        <h5 class="card-title">Pedidos recientes</h5>
                         <div class="table-responsive">
                             <table class="table table-striped" id="recentOrdersTable">
                                 <thead>
                                     <tr>
-                                        <th>Order ID</th>
-                                        <th>Client</th>
-                                        <th>Date</th>
+                                        <th>ID Orden</th>
+                                        <th>Cliente</th>
+                                        <th>Fecha</th>
                                         <th>Total</th>
                                     </tr>
                                 </thead>
@@ -59,7 +59,7 @@ export function initDashboard(container) {
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Top Selling Products</h5>
+                                <h5 class="card-title">Productos más vendidos</h5>
                                 <canvas id="topSellingProductsChart"></canvas>
                             </div>
                         </div>
@@ -67,7 +67,7 @@ export function initDashboard(container) {
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Sales by Category</h5>
+                                <h5 class="card-title">Ventas por categoría</h5>
                                 <canvas id="salesByCategoryChart"></canvas>
                             </div>
                         </div>

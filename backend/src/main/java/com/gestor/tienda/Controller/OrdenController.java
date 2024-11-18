@@ -28,7 +28,6 @@ import com.gestor.tienda.Entity.Producto;
 import com.gestor.tienda.Service.OrdenService;
 import com.gestor.tienda.Service.ProductoService;
 
-
 @RestController
 @RequestMapping("/api/ordenes")
 @CrossOrigin("*")
@@ -38,7 +37,7 @@ public class OrdenController {
     private OrdenService ordenService;
 
     @Autowired
-    private ProductoService productoService; // Inyectar ProductoService
+    private ProductoService productoService;
 
     @GetMapping
     public List<Orden> getAllOrdenes() {
@@ -53,53 +52,12 @@ public class OrdenController {
 
     @PostMapping
     public ResponseEntity<Orden> createOrden(@RequestBody OrdenDto ordenDto) {
-    Orden orden = new Orden();
-    
-    // Asignar fecha y hora directamente desde OrdenDto
-    orden.setFecha(ordenDto.getFecha()); // LocalDate
-    orden.setHora(ordenDto.getHora()); // LocalTime
-    
-    // Asignar cliente, forma de pago y empleado
-    Cliente cliente = new Cliente();
-    cliente.setId(ordenDto.getClienteId());
-    orden.setCliente(cliente);
-    
-    FormaPago formaPago = new FormaPago();
-    formaPago.setId(ordenDto.getFormaPagoId());
-    orden.setFormaPago(formaPago);
-    
-    Empleado empleado = new Empleado();
-    empleado.setId(ordenDto.getEmpleadoId());
-    orden.setEmpleado(empleado);
-    
-    // Agregar detalles de la orden
-    for (DetalleOrdenDto detalleDto : ordenDto.getDetallesOrden()) {
-        DetalleOrden detalleOrden = new DetalleOrden();
-        // Obtener el producto por ID usando ProductoService
-        Producto producto = productoService.getProductoById(detalleDto.getProductoId()).orElse(null);
-        if (producto != null) {
-            detalleOrden.setProducto(producto); // Asignar el producto
-            detalleOrden.setCantidad(detalleDto.getCantidad());
-            
-            // Calcular el precio
-            BigDecimal precioDetalle = producto.getPrecio().multiply(BigDecimal.valueOf(detalleOrden.getCantidad()));
-            detalleOrden.setPrecioDetalle(precioDetalle);
-            detalleOrden.setOrden(orden); // Asignar la orden al detalle
-            orden.getDetallesOrden().add(detalleOrden); // Agregar el detalle a la orden
-        } else {
-            // Manejar el caso en que el producto no existe
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-    
-    // Calcular el precio total antes de guardar
-    orden.calcularPrecioTotal();
-    
-    // Guardar la orden
-    Orden savedOrden = ordenService.saveOrden(orden);
-    return new ResponseEntity<>(savedOrden, HttpStatus.CREATED);
-}
+        Orden orden = new Orden();
+        asignarDatosOrden(orden, ordenDto);
 
+        Orden savedOrden = ordenService.saveOrden(orden);
+        return new ResponseEntity<>(savedOrden, HttpStatus.CREATED);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Orden> updateOrden(@PathVariable Integer id, @RequestBody OrdenDto ordenDto) {
@@ -107,51 +65,9 @@ public class OrdenController {
             Optional<Orden> optionalOrden = ordenService.getOrdenById(id);
             if (optionalOrden.isPresent()) {
                 Orden orden = optionalOrden.get();
-                
-                // Asignar fecha y hora directamente desde OrdenDto
-                orden.setFecha(ordenDto.getFecha()); // LocalDate
-                orden.setHora(ordenDto.getHora()); // LocalTime
-                
-                // Asignar cliente, forma de pago y empleado
-                Cliente cliente = new Cliente();
-                cliente.setId(ordenDto.getClienteId());
-                orden.setCliente(cliente);
-                
-                FormaPago formaPago = new FormaPago();
-                formaPago.setId(ordenDto.getFormaPagoId());
-                orden.setFormaPago(formaPago);
-                
-                Empleado empleado = new Empleado();
-                empleado.setId(ordenDto.getEmpleadoId());
-                orden.setEmpleado(empleado);
-                
-                // Limpiar los detalles de la orden actual
                 orden.getDetallesOrden().clear();
-                
-                // Agregar detalles de la orden
-                for (DetalleOrdenDto detalleDto : ordenDto.getDetallesOrden()) {
-                    DetalleOrden detalleOrden = new DetalleOrden();
-                    // Obtener el producto por ID usando ProductoService
-                    Producto producto = productoService.getProductoById(detalleDto.getProductoId()).orElse(null);
-                    if (producto != null) {
-                        detalleOrden.setProducto(producto); // Asignar el producto
-                        detalleOrden.setCantidad(detalleDto.getCantidad());
-                        
-                        // Calcular el precio
-                        BigDecimal precioDetalle = producto.getPrecio().multiply(BigDecimal.valueOf(detalleOrden.getCantidad()));
-                        detalleOrden.setPrecioDetalle(precioDetalle);
-                        detalleOrden.setOrden(orden); // Asignar la orden al detalle
-                        orden.getDetallesOrden().add(detalleOrden); // Agregar el detalle a la orden
-                    } else {
-                        // Manejar el caso en que el producto no existe
-                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                    }
-                }
-                
-                // Calcular el precio total antes de guardar
-                orden.calcularPrecioTotal();
-                
-                // Guardar la orden actualizada
+                asignarDatosOrden(orden, ordenDto);
+
                 Orden updatedOrden = ordenService.saveOrden(orden);
                 return new ResponseEntity<>(updatedOrden, HttpStatus.OK);
             }
@@ -167,5 +83,38 @@ public class OrdenController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-}
 
+    private void asignarDatosOrden(Orden orden, OrdenDto ordenDto) {
+        orden.setFecha(ordenDto.getFecha());
+        orden.setHora(ordenDto.getHora());
+
+        Cliente cliente = new Cliente();
+        cliente.setId(ordenDto.getClienteId());
+        orden.setCliente(cliente);
+
+        FormaPago formaPago = new FormaPago();
+        formaPago.setId(ordenDto.getFormaPagoId());
+        orden.setFormaPago(formaPago);
+
+        Empleado empleado = new Empleado();
+        empleado.setId(ordenDto.getEmpleadoId());
+        orden.setEmpleado(empleado);
+
+        for (DetalleOrdenDto detalleDto : ordenDto.getDetallesOrden()) {
+            DetalleOrden detalleOrden = new DetalleOrden();
+            Producto producto = productoService.getProductoById(detalleDto.getProductoId()).orElse(null);
+            if (producto != null) {
+                detalleOrden.setProducto(producto);
+                detalleOrden.setCantidad(detalleDto.getCantidad());
+                BigDecimal precioDetalle = producto.getPrecio().multiply(BigDecimal.valueOf(detalleOrden.getCantidad()));
+                detalleOrden.setPrecioDetalle(precioDetalle);
+                detalleOrden.setOrden(orden);
+                orden.getDetallesOrden().add(detalleOrden);
+            } else {
+                throw new RuntimeException("Producto no encontrado: " + detalleDto.getProductoId());
+            }
+        }
+
+        orden.calcularPrecioTotal();
+    }
+}

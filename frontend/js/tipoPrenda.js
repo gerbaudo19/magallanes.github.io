@@ -56,7 +56,15 @@ function updateTipoPrendaTable() {
     }
 }
 
+// Crea los modales para agregar y editar tipos Productos
 function createTipoPrendaModals() {
+    return `
+        ${createAddTipoPrendaModals()}
+        ${createEditTipoPrendaModals()}
+    `;
+}
+
+function createAddTipoPrendaModals() {
     return `
         <div class="modal fade" id="addTipoPrendaModal" tabindex="-1" aria-labelledby="addTipoPrendaModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -81,7 +89,11 @@ function createTipoPrendaModals() {
                 </div>
             </div>
         </div>
+    `;
+}
 
+function createEditTipoPrendaModals() {
+    return `
         <div class="modal fade" id="editTipoPrendaModal" tabindex="-1" aria-labelledby="editTipoPrendaModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -110,8 +122,24 @@ function createTipoPrendaModals() {
 }
 
 function setupTipoPrendaEventListeners() {
-    handleFormSubmit('addTipoPrendaForm', 'http://localhost:8080/api/tipoPrendas', 'POST', 'Tipo de Prenda agregado exitosamente', fetchTipoPrendas);
-    handleFormSubmit('editTipoPrendaForm', 'http://localhost:8080/api/tipoPrendas', 'PUT', 'Tipo de Prenda actualizado exitosamente', fetchTipoPrendas);
+    handleFormSubmit(
+        'addTipoPrendaForm', 
+        'http://localhost:8080/api/tipoPrendas', 
+        'POST', 
+        'Tipo de Prenda agregado exitosamente', 
+        fetchTipoPrendas
+    );
+
+    handleFormSubmit(
+        'editTipoPrendaForm',
+        (form) => {
+            const id = form.elements['id'].value; // Obtén el ID del formulario correctamente
+            return `http://localhost:8080/api/tipoPrendas/${id}`;
+        },
+        'PUT', 
+        'Tipo de Prenda actualizado exitosamente', 
+        fetchTipoPrendas
+    );
 }
 
 window.openModal = function(modalType) {

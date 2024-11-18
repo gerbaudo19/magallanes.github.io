@@ -81,7 +81,15 @@ function updateProductTypeDropdowns() {
     if (editSelect) editSelect.innerHTML = `<option value="">Select a type</option>${options}`;
 }
 
+// Crea los modales para agregar y editar productos
 function createProductModals() {
+    return `
+        ${createAddProductModals()}
+        ${createEditProductModals()}
+    `;
+}
+
+function createAddProductModals() {
     return `
         <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -125,7 +133,11 @@ function createProductModals() {
                 </div>
             </div>
         </div>
+    `;
+}
 
+function createEditProductModals() {
+    return `
         <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -173,8 +185,24 @@ function createProductModals() {
 }
 
 function setupProductEventListeners() {
-    handleFormSubmit('addProductForm', 'http://localhost:8080/api/productos/create', 'POST', 'Producto agregado exitosamente', fetchProducts);
-    handleFormSubmit('editProductForm', 'http://localhost:8080/api/productos', 'PUT', 'Producto actualizado correctamente', fetchProducts);
+    handleFormSubmit(
+        'addProductForm', 
+        'http://localhost:8080/api/productos/create', 
+        'POST', 
+        'Producto agregado exitosamente', 
+        fetchProducts
+    );
+
+    handleFormSubmit(
+        'editProductForm', 
+        (form) => {
+            const id = form.elements['id'].value; // Obtén el ID del formulario correctamente
+            return `http://localhost:8080/api/productos/${id}`;
+        }, 
+        'PUT', 
+        'Producto actualizado correctamente', 
+        fetchProducts
+    );
 }
 
 window.openModal = function(modalType) {
