@@ -1,4 +1,4 @@
-import { fetchData, handleFormSubmit, getAuthHeader } from './main.js';
+import { fetchData, getAuthHeader } from './main.js';
 
 let orders = [];
 let clients = [];
@@ -89,7 +89,9 @@ function updateOrderTable() {
 function updateClientDropdown() {
     const clientSelect = document.getElementById('orderClient');
     const editClientSelect = document.getElementById('editOrderClient');
-    const options = clients.map(client => `<option value="${client.id}">${client.nombre} ${client.apellido}</option>`).join('');
+    const options = clients.map(client => 
+        `<option value="${client.id}">${client.nombre} ${client.apellido}</option>`
+    ).join('');
     
     if (clientSelect) clientSelect.innerHTML = `<option value="">Seleccionar cliente</option>${options}`;
     if (editClientSelect) editClientSelect.innerHTML = `<option value="">Seleccionar cliente</option>${options}`;
@@ -98,7 +100,9 @@ function updateClientDropdown() {
 function updateEmployeeDropdown() {
     const employeeSelect = document.getElementById('orderEmployee');
     const editEmployeeSelect = document.getElementById('editOrderEmployee');
-    const options = employees.map(employee => `<option value="${employee.id}">${employee.nombre} ${employee.apellido}</option>`).join('');
+    const options = employees.map(employee => 
+        `<option value="${employee.id}">${employee.nombre} ${employee.apellido}</option>`
+    ).join('');
     
     if (employeeSelect) employeeSelect.innerHTML = `<option value="">Seleccionar empleado</option>${options}`;
     if (editEmployeeSelect) editEmployeeSelect.innerHTML = `<option value="">Seleccionar empleado</option>${options}`;
@@ -107,21 +111,22 @@ function updateEmployeeDropdown() {
 function updateProductDropdown() {
     const productSelect = document.getElementById('orderProducts');
     const editProductSelect = document.getElementById('editOrderProducts');
-    const options = products.map(product => `<option value="${product.id}">${product.nombre} - $${product.precio.toFixed(2)}</option>`).join('');
+    const options = products.map(product => 
+        `<option value="${product.id}">${product.nombre} - $${product.precio.toFixed(2)}</option>`
+    ).join('');
     
     if (productSelect) productSelect.innerHTML = options;
     if (editProductSelect) editProductSelect.innerHTML = options;
 }
 
-// Crea los modales para agregar y editar Ordenes
 function createOrderModals() {
     return `
-        ${createAddOrderModals()}
-        ${createEditOrderModals()}
+        ${createAddOrderModal()}
+        ${createEditOrderModal()}
     `;
 }
 
-function createAddOrderModals() {
+function createAddOrderModal() {
     return `
         <div class="modal fade" id="addOrderModal" tabindex="-1" aria-labelledby="addOrderModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -178,7 +183,7 @@ function createAddOrderModals() {
     `;
 }
 
-function createEditOrderModals() {
+function createEditOrderModal() {
     return `
         <div class="modal fade" id="editOrderModal" tabindex="-1" aria-labelledby="editOrderModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -236,27 +241,109 @@ function createEditOrderModals() {
 }
 
 function setupOrderEventListeners() {
-    handleFormSubmit(
-        'addOrderForm', 
-        'http://localhost:8080/api/ordenes', 
-        'POST', 
-        'Orden agregada exitosamente', 
-        fetchOrders
-    );
-    handleFormSubmit(
-        'editOrderForm',
-        (form) => {
-            const id = form.elements['id'].value; // Obtén el ID del formulario correctamente
-            return `http://localhost:8080/api/ordenes/${id}`;
-        },
-        'PUT', 
-        'Orden actualizada exitosamente', 
-        fetchOrders
-    );
+    // Handle Add Order Form Submit
+    const addOrderForm = document.getElementById('addOrderForm');
+    if (addOrderForm) {
+        addOrderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(addOrderForm);
+            
+            const requestBody = {
+                fecha: formData.get('fecha'),
+                hora: formData.get('hora'),
+                clienteId: parseInt(formData.get('clienteId')),
+                formaPagoId: parseInt(formData.get('formaPagoId')),
+                empleadoId: parseInt(formData.get('empleadoId')),
+                detallesOrden: []
+            };
+
+            const productoIds = formData.getAll('productoId[]');
+            const cantidades = formData.getAll('cantidad[]');
+
+            for (let i = 0; i < productoIds.length; i++) {
+                requestBody.detallesOrden.push({
+                    productoId: parseInt(productoIds[i]),
+                    cantidad: parseInt(cantidades[i])
+                });
+            }
+
+            fetch('http://localhost:8080/api/ordenes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...getAuthHeader()
+                },
+                body: JSON.stringify(requestBody)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Orden agregada exitosamente');
+                    const modal = bootstrap.Modal.getInstance(addOrderForm.closest('.modal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                    fetchOrders();
+                } else {
+                    alert('Error al agregar la orden');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    }
+
+    // Handle Edit Order Form Submit
+    const editOrderForm = document.getElementById('editOrderForm');
+    if (editOrderForm) {
+        editOrderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(editOrderForm);
+            const orderId = formData.get('id');
+
+            const requestBody = {
+                fecha: formData.get('fecha'),
+                hora: formData.get('hora'),
+                clienteId: parseInt(formData.get('clienteId')),
+                formaPagoId: parseInt(formData.get('formaPagoId')),
+                empleadoId: parseInt(formData.get('empleadoId')),
+                detallesOrden: []
+            };
+
+            const productoIds = formData.getAll('productoId[]');
+            const cantidades = formData.getAll('cantidad[]');
+
+            for (let i = 0; i < productoIds.length; i++) {
+                requestBody.detallesOrden.push({
+                    productoId: parseInt(productoIds[i]),
+                    cantidad: parseInt(cantidades[i])
+                });
+            }
+
+            fetch(`http://localhost:8080/api/ordenes/${orderId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...getAuthHeader()
+                },
+                body: JSON.stringify(requestBody)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Orden actualizada exitosamente');
+                    const modal = bootstrap.Modal.getInstance(editOrderForm.closest('.modal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                    fetchOrders();
+                } else {
+                    alert('Error al actualizar la orden');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    }
 }
 
-
-
+// Global functions for window object
 window.openModal = function(modalType) {
     const modal = new bootstrap.Modal(document.getElementById(`${modalType}Modal`));
     modal.show();
@@ -332,13 +419,11 @@ window.addProductToOrder = function(productId = '', quantity = 1) {
     container.appendChild(row);
 }
 
-// Función para eliminar una fila de producto
 window.removeProductRow = function(button) {
     const row = button.closest('.row');
     row.remove();
 }
 
-// Añade esta función en el contenedor de productos al abrir el modal de edición
 window.addProductToEditOrder = function(productId = '', quantity = 1) {
     const container = document.getElementById('editOrderProductsContainer');
     const row = document.createElement('div');
