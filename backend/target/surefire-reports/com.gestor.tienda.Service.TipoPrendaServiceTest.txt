@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.gestor.tienda.Service.TipoPrendaServiceTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.426 s -- in com.gestor.tienda.Service.TipoPrendaServiceTest

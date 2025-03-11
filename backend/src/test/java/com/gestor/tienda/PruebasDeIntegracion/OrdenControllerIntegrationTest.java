@@ -102,7 +102,7 @@ public class OrdenControllerIntegrationTest {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
                 .content(objectMapper.writeValueAsString(ordenDto)))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                  .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.detallesOrden.cantidad").value(5));
     }
 

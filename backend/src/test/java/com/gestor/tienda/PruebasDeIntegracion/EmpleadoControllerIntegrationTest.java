@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gestor.tienda.Auth.AuthResponse;
 import com.gestor.tienda.Auth.LoginRequest;
@@ -42,7 +43,7 @@ public class EmpleadoControllerIntegrationTest {
         // Aquí intentamos parsear la respuesta como JSON, y si falla, asumimos que es el token directamente
         try {
             jwtToken = objectMapper.readValue(loginResponse, AuthResponse.class).getToken();
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             jwtToken = loginResponse.trim(); // Asumimos que es el token directamente
         }
     }

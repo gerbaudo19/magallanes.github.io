@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.gestor.tienda.PruebasDeIntegracion.AuthControllerIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 39.37 s -- in com.gestor.tienda.PruebasDeIntegracion.AuthControllerIntegrationTest

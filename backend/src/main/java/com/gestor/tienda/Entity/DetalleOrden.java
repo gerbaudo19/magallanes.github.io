@@ -45,7 +45,7 @@ public class DetalleOrden {
     }
 
     // Método para obtener el ID del producto
-    public int getProductoId() {
+    public long getProductoId() {
         return this.producto.getId(); // Asegúrate de que `getId()` esté definido en la clase `Producto`
     }
 }

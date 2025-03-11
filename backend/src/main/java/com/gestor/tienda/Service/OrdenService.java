@@ -1,5 +1,7 @@
 package com.gestor.tienda.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,5 +37,13 @@ public class OrdenService {
 
     public boolean existsById(int id) {
         return ordenRepository.existsById(id);
+    }
+
+        // Nuevo método para calcular ganancia total entre dos fechas
+    public BigDecimal calcularGananciaTotalPorFecha(LocalDate fechaInicio, LocalDate fechaFin) {
+        List<Orden> ordenes = ordenRepository.findByFechaBetween(fechaInicio, fechaFin);
+        return ordenes.stream()
+                      .map(Orden::getPrecioTotal)
+                      .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

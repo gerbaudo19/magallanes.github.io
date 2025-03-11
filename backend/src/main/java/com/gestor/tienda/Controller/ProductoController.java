@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gestor.tienda.Dto.ProductoDto;
+import com.gestor.tienda.Dto.ProductoEstadisticasDto;
 import com.gestor.tienda.Entity.Producto;
 import com.gestor.tienda.Entity.TipoPrenda;
 import com.gestor.tienda.Service.ProductoService;
@@ -65,7 +66,7 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Producto> getProductoById(@PathVariable int id) {
+    public ResponseEntity<Producto> getProductoById(@PathVariable long id) {
         Optional<Producto> producto = productoService.getProductoById(id);
         return producto.map(ResponseEntity::ok).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -77,7 +78,7 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProducto(@PathVariable int id) {
+    public ResponseEntity<?> deleteProducto(@PathVariable long id) {
         if (productoService.getProductoById(id).isPresent()) {
             productoService.deleteProducto(id);
             return new ResponseEntity<>("Producto eliminado exitosamente.", HttpStatus.OK);
@@ -87,7 +88,7 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateProducto(@PathVariable int id, @RequestBody ProductoDto productoDto) {
+    public ResponseEntity<String> updateProducto(@PathVariable long id, @RequestBody ProductoDto productoDto) {
         Optional<Producto> productoOptional = productoService.getProductoById(id);
         if (productoOptional.isEmpty()) {
             return new ResponseEntity<>("Producto no encontrado.", HttpStatus.NOT_FOUND);
@@ -109,5 +110,11 @@ public class ProductoController {
 
         productoService.saveProducto(productoExistente);
         return new ResponseEntity<>("Producto actualizado exitosamente.", HttpStatus.OK);
+    }
+
+    // Endpoint para obtener los productos más vendidos
+    @GetMapping("/mas-vendidos")
+    public List<ProductoEstadisticasDto> obtenerProductosMasVendidos() {
+        return productoService.obtenerProductosMasVendidos();
     }
 }

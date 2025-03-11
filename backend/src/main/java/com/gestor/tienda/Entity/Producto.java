@@ -1,6 +1,5 @@
 package com.gestor.tienda.Entity;
 
-
 import java.math.BigDecimal;
 
 import jakarta.persistence.Entity;
@@ -21,7 +20,7 @@ public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
     private String nombre;
     private BigDecimal precio; // Cambiado a BigDecimal
     private String talle;

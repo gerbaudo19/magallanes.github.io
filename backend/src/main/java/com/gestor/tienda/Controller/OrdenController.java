@@ -1,6 +1,7 @@
 package com.gestor.tienda.Controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,9 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gestor.tienda.Dto.DetalleOrdenDto;
+import com.gestor.tienda.Dto.GananciaTotalDto;
 import com.gestor.tienda.Dto.OrdenDto;
 import com.gestor.tienda.Entity.Cliente;
 import com.gestor.tienda.Entity.DetalleOrden;
@@ -116,5 +119,12 @@ public class OrdenController {
         }
 
         orden.calcularPrecioTotal();
+    }
+
+    // Nuevo endpoint para calcular la ganancia total entre dos fechas
+    @GetMapping("/ganancia-total")
+    public ResponseEntity<GananciaTotalDto> calcularGananciaTotal(@RequestParam LocalDate fechaInicio, @RequestParam LocalDate fechaFin) {
+        BigDecimal gananciaTotal = ordenService.calcularGananciaTotalPorFecha(fechaInicio, fechaFin);
+        return ResponseEntity.ok(new GananciaTotalDto(gananciaTotal));
     }
 }

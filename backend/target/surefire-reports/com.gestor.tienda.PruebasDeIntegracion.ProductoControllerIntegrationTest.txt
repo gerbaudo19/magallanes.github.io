@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------------
+Test set: com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 4, Errors: 0, Skipped: 0, Time elapsed: 22.76 s <<< FAILURE! -- in com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest
+com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.testDeleteProductoSuccess -- Time elapsed: 1.805 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<400>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.createProducto(ProductoControllerIntegrationTest.java:70)
+	at com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.setup(ProductoControllerIntegrationTest.java:53)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.testCreateProductoSuccess -- Time elapsed: 0.211 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<400>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.createProducto(ProductoControllerIntegrationTest.java:70)
+	at com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.setup(ProductoControllerIntegrationTest.java:53)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.testGetProductoByIdNotFound -- Time elapsed: 0.329 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<400>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.createProducto(ProductoControllerIntegrationTest.java:70)
+	at com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.setup(ProductoControllerIntegrationTest.java:53)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.testUpdateProductoSuccess -- Time elapsed: 0.195 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<400>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.createProducto(ProductoControllerIntegrationTest.java:70)
+	at com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.setup(ProductoControllerIntegrationTest.java:53)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

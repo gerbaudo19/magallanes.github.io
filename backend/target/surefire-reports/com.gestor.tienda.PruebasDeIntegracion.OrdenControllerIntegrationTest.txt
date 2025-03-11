@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------------
+Test set: com.gestor.tienda.PruebasDeIntegracion.OrdenControllerIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 30.20 s <<< FAILURE! -- in com.gestor.tienda.PruebasDeIntegracion.OrdenControllerIntegrationTest
+com.gestor.tienda.PruebasDeIntegracion.OrdenControllerIntegrationTest.testUpdateOrdenSuccess -- Time elapsed: 2.915 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<404>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.gestor.tienda.PruebasDeIntegracion.OrdenControllerIntegrationTest.testUpdateOrdenSuccess(OrdenControllerIntegrationTest.java:105)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.gestor.tienda.PruebasDeIntegracion.OrdenControllerIntegrationTest.testCreateOrdenSuccess -- Time elapsed: 0.461 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<201> but was:<500>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.gestor.tienda.PruebasDeIntegracion.OrdenControllerIntegrationTest.testCreateOrdenSuccess(OrdenControllerIntegrationTest.java:69)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.gestor.tienda.PruebasDeIntegracion.OrdenControllerIntegrationTest.testDeleteOrdenSuccess -- Time elapsed: 0.194 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<204> but was:<404>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.gestor.tienda.PruebasDeIntegracion.OrdenControllerIntegrationTest.testDeleteOrdenSuccess(OrdenControllerIntegrationTest.java:115)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

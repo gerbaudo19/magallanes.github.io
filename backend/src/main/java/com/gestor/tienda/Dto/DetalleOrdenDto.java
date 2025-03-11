@@ -18,7 +18,7 @@ public class DetalleOrdenDto {
     private int ordenId;
 
     @NotNull
-    private int productoId;
+    private long productoId;
 
     @NotNull
     private int cantidad;

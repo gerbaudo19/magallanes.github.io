@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gestor.tienda.Dto.ProductoEstadisticasDto;
 import com.gestor.tienda.Entity.Producto;
 import com.gestor.tienda.Repository.ProductoRepository;
 
@@ -22,7 +23,8 @@ public class ProductoService {
         return productoRepository.findAll();
     }
 
-    public Optional<Producto> getProductoById(int id) {
+    // Cambiar el tipo de id de int a Long
+    public Optional<Producto> getProductoById(Long id) {
         return productoRepository.findById(id);
     }
 
@@ -30,12 +32,16 @@ public class ProductoService {
         return productoRepository.save(producto);
     }
 
-    public void deleteProducto(int id) {
+    public void deleteProducto(long id) {
         productoRepository.deleteById(id);
     }
 
-    public boolean existsById(int id) {
+    // Cambiar el tipo de id de int a Long
+    public boolean existsById(long id) {
         return productoRepository.existsById(id);
     }
-}
 
+    public List<ProductoEstadisticasDto> obtenerProductosMasVendidos() {
+        return productoRepository.findProductosMasVendidos();
+    }
+}
