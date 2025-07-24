@@ -54,29 +54,34 @@ public class OrdenController {
     }
 
     @PostMapping
-    public ResponseEntity<Orden> createOrden(@RequestBody OrdenDto ordenDto) {
+    public ResponseEntity<?> createOrden(@RequestBody OrdenDto ordenDto) {
+    try {
         Orden orden = new Orden();
         asignarDatosOrden(orden, ordenDto);
-
         Orden savedOrden = ordenService.saveOrden(orden);
         return new ResponseEntity<>(savedOrden, HttpStatus.CREATED);
+    } catch (Exception e) {
+        return new ResponseEntity<>("Error al crear la orden: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Orden> updateOrden(@PathVariable Integer id, @RequestBody OrdenDto ordenDto) {
-        if (ordenService.existsById(id)) {
-            Optional<Orden> optionalOrden = ordenService.getOrdenById(id);
-            if (optionalOrden.isPresent()) {
-                Orden orden = optionalOrden.get();
-                orden.getDetallesOrden().clear();
-                asignarDatosOrden(orden, ordenDto);
-
-                Orden updatedOrden = ordenService.saveOrden(orden);
-                return new ResponseEntity<>(updatedOrden, HttpStatus.OK);
-            }
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> updateOrden(@PathVariable Integer id, @RequestBody OrdenDto ordenDto) {
+    if (!ordenService.existsById(id)) {
+        return new ResponseEntity<>("Orden no encontrada", HttpStatus.NOT_FOUND);
     }
+
+    try {
+        Orden orden = ordenService.getOrdenById(id).get();
+        orden.getDetallesOrden().clear(); // Elimina detalles actuales
+        asignarDatosOrden(orden, ordenDto);
+        Orden updatedOrden = ordenService.saveOrden(orden);
+        return new ResponseEntity<>(updatedOrden, HttpStatus.OK);
+    } catch (Exception e) {
+        return new ResponseEntity<>("Error al actualizar la orden: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrden(@PathVariable Integer id) {
@@ -87,44 +92,50 @@ public class OrdenController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    private void asignarDatosOrden(Orden orden, OrdenDto ordenDto) {
-        orden.setFecha(ordenDto.getFecha());
-        orden.setHora(ordenDto.getHora());
-
-        Cliente cliente = new Cliente();
-        cliente.setId(ordenDto.getClienteId());
-        orden.setCliente(cliente);
-
-        FormaPago formaPago = new FormaPago();
-        formaPago.setId(ordenDto.getFormaPagoId());
-        orden.setFormaPago(formaPago);
-
-        Empleado empleado = new Empleado();
-        empleado.setId(ordenDto.getEmpleadoId());
-        orden.setEmpleado(empleado);
-
-        for (DetalleOrdenDto detalleDto : ordenDto.getDetallesOrden()) {
-            DetalleOrden detalleOrden = new DetalleOrden();
-            Producto producto = productoService.getProductoById(detalleDto.getProductoId()).orElse(null);
-            if (producto != null) {
-                detalleOrden.setProducto(producto);
-                detalleOrden.setCantidad(detalleDto.getCantidad());
-                BigDecimal precioDetalle = producto.getPrecio().multiply(BigDecimal.valueOf(detalleOrden.getCantidad()));
-                detalleOrden.setPrecioDetalle(precioDetalle);
-                detalleOrden.setOrden(orden);
-                orden.getDetallesOrden().add(detalleOrden);
-            } else {
-                throw new RuntimeException("Producto no encontrado: " + detalleDto.getProductoId());
-            }
-        }
-
-        orden.calcularPrecioTotal();
-    }
-
-    // Nuevo endpoint para calcular la ganancia total entre dos fechas
     @GetMapping("/ganancia-total")
-    public ResponseEntity<GananciaTotalDto> calcularGananciaTotal(@RequestParam LocalDate fechaInicio, @RequestParam LocalDate fechaFin) {
+    public ResponseEntity<GananciaTotalDto> calcularGananciaTotal(
+            @RequestParam LocalDate fechaInicio,
+            @RequestParam LocalDate fechaFin) {
         BigDecimal gananciaTotal = ordenService.calcularGananciaTotalPorFecha(fechaInicio, fechaFin);
         return ResponseEntity.ok(new GananciaTotalDto(gananciaTotal));
     }
+
+    private void asignarDatosOrden(Orden orden, OrdenDto ordenDto) {
+    orden.setFecha(ordenDto.getFecha());
+    orden.setHora(ordenDto.getHora());
+
+    Cliente cliente = new Cliente();
+    cliente.setId(ordenDto.getClienteId());
+    orden.setCliente(cliente);
+
+    FormaPago formaPago = new FormaPago();
+    formaPago.setId(ordenDto.getFormaPagoId());
+    orden.setFormaPago(formaPago);
+
+    Empleado empleado = new Empleado();
+    empleado.setId(ordenDto.getEmpleadoId());
+    orden.setEmpleado(empleado);
+
+    orden.setPrecioTotal(BigDecimal.ZERO); // Reinicio del total antes de sumar
+
+    for (DetalleOrdenDto detalleDto : ordenDto.getDetallesOrden()) {
+        Producto producto = productoService.getProductoById(detalleDto.getProductoId())
+                                           .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + detalleDto.getProductoId()));
+
+        DetalleOrden detalleOrden = new DetalleOrden();
+        detalleOrden.setProducto(producto);
+        detalleOrden.setCantidad(detalleDto.getCantidad());
+
+        BigDecimal precioDetalle = producto.getPrecio()
+            .multiply(BigDecimal.valueOf(detalleOrden.getCantidad()));
+
+        detalleOrden.setPrecioDetalle(precioDetalle);
+        detalleOrden.setOrden(orden);
+
+        orden.getDetallesOrden().add(detalleOrden);
+    }
+
+    orden.calcularPrecioTotal(); // Esto ahora suma correctamente
+    }
+
 }

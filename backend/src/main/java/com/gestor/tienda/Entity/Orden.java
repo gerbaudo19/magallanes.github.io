@@ -44,8 +44,9 @@ public class Orden {
 
     private BigDecimal precioTotal;
 
-    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleOrden> detallesOrden = new ArrayList<>();
+
 
     public void calcularPrecioTotal() {
         this.precioTotal = detallesOrden.stream()

@@ -1,6 +1,7 @@
 package com.gestor.tienda.Controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import com.gestor.tienda.Dto.ProductoDto;
 import com.gestor.tienda.Dto.ProductoEstadisticasDto;
 import com.gestor.tienda.Entity.Producto;
 import com.gestor.tienda.Entity.TipoPrenda;
+import com.gestor.tienda.Service.MovimientoStockService;
 import com.gestor.tienda.Service.ProductoService;
 import com.gestor.tienda.Service.TipoPrendaService;
 
@@ -34,11 +36,13 @@ public class ProductoController {
     @Autowired
     private TipoPrendaService tipoPrendaService;
 
+    @Autowired
+    private MovimientoStockService movimientoStockService;
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody ProductoDto productoDto) {
         if (productoDto.getNombre().isBlank() ||
             productoDto.getPrecio() == null ||
-            productoDto.getTalle().isBlank() ||
             productoDto.getColor().isBlank() ||
             productoDto.getMarca().isBlank() ||
             productoDto.getTipoPrendaId() == null) {
@@ -55,13 +59,27 @@ public class ProductoController {
         Producto productoNuevo = new Producto(
             productoDto.getNombre(),
             productoDto.getPrecio(),
-            productoDto.getTalle(),
             productoDto.getColor(),
             productoDto.getMarca(),
             tipoPrenda
         );
 
+        // Agregar stock por talle si se proporciona
+        if (productoDto.getStockPorTalle() != null) {
+            for (Map.Entry<String, Integer> entry : productoDto.getStockPorTalle().entrySet()) {
+                productoNuevo.agregarStock(entry.getKey(), entry.getValue());
+            }
+        }
+
         productoService.saveProducto(productoNuevo);
+
+        // Registrar movimientos de stock si se proporciona
+        if (productoDto.getStockPorTalle() != null) {
+            for (Map.Entry<String, Integer> entry : productoDto.getStockPorTalle().entrySet()) {
+                movimientoStockService.registrarMovimiento("ENTRADA", entry.getKey(), entry.getValue(), productoNuevo);
+            }
+        }
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -89,30 +107,55 @@ public class ProductoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateProducto(@PathVariable long id, @RequestBody ProductoDto productoDto) {
-        Optional<Producto> productoOptional = productoService.getProductoById(id);
-        if (productoOptional.isEmpty()) {
-            return new ResponseEntity<>("Producto no encontrado.", HttpStatus.NOT_FOUND);
-        }
-
-        Producto productoExistente = productoOptional.get();
-        productoExistente.setNombre(productoDto.getNombre());
-        productoExistente.setPrecio(productoDto.getPrecio());
-        productoExistente.setTalle(productoDto.getTalle());
-        productoExistente.setColor(productoDto.getColor());
-        productoExistente.setMarca(productoDto.getMarca());
-
-        Optional<TipoPrenda> tipoPrendaOpt = tipoPrendaService.getTipoPrendaById(productoDto.getTipoPrendaId());
-        if (!tipoPrendaOpt.isPresent()) {
-            return new ResponseEntity<>("Tipo de prenda no encontrado.", HttpStatus.BAD_REQUEST);
-        }
-
-        productoExistente.setTipoPrenda(tipoPrendaOpt.get());
-
-        productoService.saveProducto(productoExistente);
-        return new ResponseEntity<>("Producto actualizado exitosamente.", HttpStatus.OK);
+    Optional<Producto> productoOptional = productoService.getProductoById(id);
+    if (productoOptional.isEmpty()) {
+        return new ResponseEntity<>("Producto no encontrado.", HttpStatus.NOT_FOUND);
     }
 
-    // Endpoint para obtener los productos más vendidos
+    if (productoDto.getNombre().isBlank() ||
+        productoDto.getPrecio() == null ||
+        productoDto.getColor().isBlank() ||
+        productoDto.getMarca().isBlank() ||
+        productoDto.getTipoPrendaId() == null) {
+        return new ResponseEntity<>("Datos inválidos.", HttpStatus.BAD_REQUEST);
+    }
+
+    Optional<TipoPrenda> tipoPrendaOpt = tipoPrendaService.getTipoPrendaById(productoDto.getTipoPrendaId());
+    if (!tipoPrendaOpt.isPresent()) {
+        return new ResponseEntity<>("Tipo de prenda no encontrado.", HttpStatus.BAD_REQUEST);
+    }
+
+    Producto productoExistente = productoOptional.get();
+    productoExistente.setNombre(productoDto.getNombre());
+    productoExistente.setPrecio(productoDto.getPrecio());
+    productoExistente.setColor(productoDto.getColor());
+    productoExistente.setMarca(productoDto.getMarca());
+    productoExistente.setTipoPrenda(tipoPrendaOpt.get());
+
+    // Actualizar stock por talle
+    // Primero, eliminar stock y movimientos existentes (según lógica de tu app)
+    productoExistente.getStockPorTalle().clear(); // limpia stock actual
+
+    // Agregar el nuevo stock por talle desde el DTO
+    if (productoDto.getStockPorTalle() != null) {
+        for (Map.Entry<String, Integer> entry : productoDto.getStockPorTalle().entrySet()) {
+            productoExistente.agregarStock(entry.getKey(), entry.getValue());
+        }
+    }
+
+    productoService.saveProducto(productoExistente);
+
+    // Registrar movimientos de stock correspondientes
+    if (productoDto.getStockPorTalle() != null) {
+        for (Map.Entry<String, Integer> entry : productoDto.getStockPorTalle().entrySet()) {
+            movimientoStockService.registrarMovimiento("ENTRADA", entry.getKey(), entry.getValue(), productoExistente);
+        }
+    }
+
+    return new ResponseEntity<>("Producto actualizado exitosamente.", HttpStatus.OK);
+    }
+
+
     @GetMapping("/mas-vendidos")
     public List<ProductoEstadisticasDto> obtenerProductosMasVendidos() {
         return productoService.obtenerProductosMasVendidos();
