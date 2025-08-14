@@ -206,11 +206,13 @@ function calcularGananciaMensual(orders) {
 
 function calcularGananciaDiaria(orders) {
     const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayString = now.toISOString().split('T')[0]; // "YYYY-MM-DD"
+    
     return orders
-        .filter(order => new Date(order.fecha) >= startOfDay)
+        .filter(order => order.fecha === todayString)
         .reduce((sum, order) => sum + order.precioTotal, 0);
 }
+
 
 function calcularGananciaTotal(orders) {
     return orders.reduce((sum, order) => sum + order.precioTotal, 0);

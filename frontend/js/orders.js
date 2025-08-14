@@ -359,26 +359,28 @@ window.viewOrder = function(id) {
 }
 
 window.editOrder = function(id) {
-    const order = orders.find(o => o.id === id);
-    if (order) {
-        document.getElementById('editOrderId').value = order.id;
-        document.getElementById('editOrderDate').value = order.fecha;
-        document.getElementById('editOrderTime').value = order.hora;
-        document.getElementById('editOrderClient').value = order.cliente.id;
-        document.getElementById('editOrderEmployee').value = order.empleado.id;
-        document.getElementById('editOrderPaymentMethod').value = order.formaPago.id;
-        
-        const productContainer = document.getElementById('editOrderProductsContainer');
-        productContainer.innerHTML = '';
-        order.detallesOrden.forEach(detalle => {
-            addProductToEditOrder(detalle.producto.id, detalle.cantidad);
-        });
-        
-        openModal('editOrder');
-    } else {
+    const order = orders.find(o => o.id == id);
+    if (!order) {
         alert('Orden no encontrada');
+        return;
     }
+
+    document.getElementById('editOrderId').value = order.id;
+    document.getElementById('editOrderDate').value = order.fecha;
+    document.getElementById('editOrderTime').value = order.hora;
+    document.getElementById('editOrderClient').value = order.cliente.id;
+    document.getElementById('editOrderEmployee').value = order.empleado.id;
+    document.getElementById('editOrderPaymentMethod').value = order.formaPago.id;
+
+    const productContainer = document.getElementById('editOrderProductsContainer');
+    productContainer.innerHTML = '';
+    order.detalles.forEach(detalle => {
+        addProductToEditOrder(detalle.productoId, detalle.cantidad);
+    });
+
+    openModal('editOrder');
 }
+
 
 window.deleteOrder = function(id) {
     if (confirm('¿Está seguro de que desea eliminar esta orden?')) {

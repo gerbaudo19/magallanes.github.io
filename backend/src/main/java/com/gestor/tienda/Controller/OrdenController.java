@@ -4,36 +4,20 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.gestor.tienda.Dto.DetalleOrdenDto;
-import com.gestor.tienda.Dto.GananciaTotalDto;
-import com.gestor.tienda.Dto.OrdenDto;
-import com.gestor.tienda.Entity.Cliente;
-import com.gestor.tienda.Entity.DetalleOrden;
-import com.gestor.tienda.Entity.Empleado;
-import com.gestor.tienda.Entity.FormaPago;
-import com.gestor.tienda.Entity.Orden;
-import com.gestor.tienda.Entity.Producto;
+import com.gestor.tienda.Dto.*;
+import com.gestor.tienda.Entity.*;
 import com.gestor.tienda.Service.OrdenService;
 import com.gestor.tienda.Service.ProductoService;
 
 @RestController
 @RequestMapping("/api/ordenes")
-@CrossOrigin("*")
 public class OrdenController {
 
     @Autowired
@@ -43,45 +27,46 @@ public class OrdenController {
     private ProductoService productoService;
 
     @GetMapping
-    public List<Orden> getAllOrdenes() {
-        return ordenService.getAllOrdenes();
+    public List<OrdenResponseDto> getAllOrdenes() {
+        return ordenService.getAllOrdenes().stream()
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Orden> getOrdenById(@PathVariable Integer id) {
+    public ResponseEntity<OrdenResponseDto> getOrdenById(@PathVariable Integer id) {
         Optional<Orden> orden = ordenService.getOrdenById(id);
-        return orden.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return orden.map(o -> ResponseEntity.ok(mapToResponseDto(o)))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<?> createOrden(@RequestBody OrdenDto ordenDto) {
-    try {
-        Orden orden = new Orden();
-        asignarDatosOrden(orden, ordenDto);
-        Orden savedOrden = ordenService.saveOrden(orden);
-        return new ResponseEntity<>(savedOrden, HttpStatus.CREATED);
-    } catch (Exception e) {
-        return new ResponseEntity<>("Error al crear la orden: " + e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
+    public ResponseEntity<OrdenResponseDto> createOrden(@RequestBody OrdenDto ordenDto) {
+        try {
+            Orden orden = new Orden();
+            asignarDatosOrden(orden, ordenDto);
+            Orden savedOrden = ordenService.saveOrden(orden);
+            return ResponseEntity.status(HttpStatus.CREATED).body(mapToResponseDto(savedOrden));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateOrden(@PathVariable Integer id, @RequestBody OrdenDto ordenDto) {
-    if (!ordenService.existsById(id)) {
-        return new ResponseEntity<>("Orden no encontrada", HttpStatus.NOT_FOUND);
+    public ResponseEntity<OrdenResponseDto> updateOrden(@PathVariable Integer id, @RequestBody OrdenDto ordenDto) {
+        if (!ordenService.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            Orden orden = ordenService.getOrdenById(id).get();
+            orden.getDetallesOrden().clear();
+            asignarDatosOrden(orden, ordenDto);
+            Orden updatedOrden = ordenService.saveOrden(orden);
+            return ResponseEntity.ok(mapToResponseDto(updatedOrden));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
-
-    try {
-        Orden orden = ordenService.getOrdenById(id).get();
-        orden.getDetallesOrden().clear(); // Elimina detalles actuales
-        asignarDatosOrden(orden, ordenDto);
-        Orden updatedOrden = ordenService.saveOrden(orden);
-        return new ResponseEntity<>(updatedOrden, HttpStatus.OK);
-    } catch (Exception e) {
-        return new ResponseEntity<>("Error al actualizar la orden: " + e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-    }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrden(@PathVariable Integer id) {
@@ -101,41 +86,79 @@ public class OrdenController {
     }
 
     private void asignarDatosOrden(Orden orden, OrdenDto ordenDto) {
-    orden.setFecha(ordenDto.getFecha());
-    orden.setHora(ordenDto.getHora());
+        orden.setFecha(ordenDto.getFecha());
+        orden.setHora(ordenDto.getHora());
 
-    Cliente cliente = new Cliente();
-    cliente.setId(ordenDto.getClienteId());
-    orden.setCliente(cliente);
+        Cliente cliente = new Cliente();
+        cliente.setId(ordenDto.getClienteId());
+        orden.setCliente(cliente);
 
-    FormaPago formaPago = new FormaPago();
-    formaPago.setId(ordenDto.getFormaPagoId());
-    orden.setFormaPago(formaPago);
+        FormaPago formaPago = new FormaPago();
+        formaPago.setId(ordenDto.getFormaPagoId());
+        orden.setFormaPago(formaPago);
 
-    Empleado empleado = new Empleado();
-    empleado.setId(ordenDto.getEmpleadoId());
-    orden.setEmpleado(empleado);
+        Empleado empleado = new Empleado();
+        empleado.setId(ordenDto.getEmpleadoId());
+        if (empleado.getRol() == null) {
+            empleado.setRol(Rol.EMPLEADO);
+        }
+        orden.setEmpleado(empleado);
 
-    orden.setPrecioTotal(BigDecimal.ZERO); // Reinicio del total antes de sumar
+        orden.setPrecioTotal(BigDecimal.ZERO);
 
-    for (DetalleOrdenDto detalleDto : ordenDto.getDetallesOrden()) {
-        Producto producto = productoService.getProductoById(detalleDto.getProductoId())
-                                           .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + detalleDto.getProductoId()));
+        for (DetalleOrdenDto detalleDto : ordenDto.getDetallesOrden()) {
+            Producto producto = productoService.getProductoById(detalleDto.getProductoId())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + detalleDto.getProductoId()));
 
-        DetalleOrden detalleOrden = new DetalleOrden();
-        detalleOrden.setProducto(producto);
-        detalleOrden.setCantidad(detalleDto.getCantidad());
+            DetalleOrden detalleOrden = new DetalleOrden();
+            detalleOrden.setProducto(producto);
+            detalleOrden.setCantidad(detalleDto.getCantidad());
+            detalleOrden.setPrecioDetalle(producto.getPrecio()
+                    .multiply(BigDecimal.valueOf(detalleOrden.getCantidad())));
+            detalleOrden.setOrden(orden);
+            orden.getDetallesOrden().add(detalleOrden);
+        }
 
-        BigDecimal precioDetalle = producto.getPrecio()
-            .multiply(BigDecimal.valueOf(detalleOrden.getCantidad()));
-
-        detalleOrden.setPrecioDetalle(precioDetalle);
-        detalleOrden.setOrden(orden);
-
-        orden.getDetallesOrden().add(detalleOrden);
+        orden.calcularPrecioTotal();
     }
 
-    orden.calcularPrecioTotal(); // Esto ahora suma correctamente
-    }
+    private OrdenResponseDto mapToResponseDto(Orden orden) {
+        OrdenResponseDto dto = new OrdenResponseDto();
+        dto.setId(orden.getId());
+        dto.setFecha(orden.getFecha());
+        dto.setHora(orden.getHora());
+        dto.setPrecioTotal(orden.getPrecioTotal());
 
+        // Cliente completo
+        ClienteDto clienteDto = new ClienteDto();
+        clienteDto.setId(orden.getCliente().getId());
+        clienteDto.setNombre(orden.getCliente().getNombre());
+        clienteDto.setApellido(orden.getCliente().getApellido());
+        dto.setCliente(clienteDto);
+
+        // Empleado completo
+        EmpleadoDto empleadoDto = new EmpleadoDto();
+        empleadoDto.setId(orden.getEmpleado().getId());
+        empleadoDto.setNombre(orden.getEmpleado().getNombre());
+        empleadoDto.setApellido(orden.getEmpleado().getApellido());
+        dto.setEmpleado(empleadoDto);
+
+        // FormaPago completo
+        FormaPagoDto formaPagoDto = new FormaPagoDto();
+        formaPagoDto.setId(orden.getFormaPago().getId());
+        formaPagoDto.setNombre(orden.getFormaPago().getNombre());
+        dto.setFormaPago(formaPagoDto);
+
+        // Detalles
+        List<DetalleOrdenResponseDto> detalles = orden.getDetallesOrden().stream().map(det -> {
+            DetalleOrdenResponseDto d = new DetalleOrdenResponseDto();
+            d.setProductoId(det.getProducto().getId());
+            d.setCantidad(det.getCantidad());
+            d.setPrecioDetalle(det.getPrecioDetalle());
+            return d;
+        }).toList();
+
+        dto.setDetalles(detalles);
+        return dto;
+    }
 }
