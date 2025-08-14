@@ -9,10 +9,32 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.gestor.tienda.Dto.*;
-import com.gestor.tienda.Entity.*;
+import com.gestor.tienda.Dto.ClienteDto;
+import com.gestor.tienda.Dto.DetalleOrdenDto;
+import com.gestor.tienda.Dto.DetalleOrdenResponseDto;
+import com.gestor.tienda.Dto.EmpleadoDto;
+import com.gestor.tienda.Dto.FormaPagoDto;
+import com.gestor.tienda.Dto.FormaPagoEstadisticaDto;
+import com.gestor.tienda.Dto.GananciaTotalDto;
+import com.gestor.tienda.Dto.OrdenDto;
+import com.gestor.tienda.Dto.OrdenResponseDto;
+import com.gestor.tienda.Entity.Cliente;
+import com.gestor.tienda.Entity.DetalleOrden;
+import com.gestor.tienda.Entity.Empleado;
+import com.gestor.tienda.Entity.FormaPago;
+import com.gestor.tienda.Entity.Orden;
+import com.gestor.tienda.Entity.Producto;
+import com.gestor.tienda.Entity.Rol;
 import com.gestor.tienda.Service.OrdenService;
 import com.gestor.tienda.Service.ProductoService;
 
@@ -84,6 +106,12 @@ public class OrdenController {
         BigDecimal gananciaTotal = ordenService.calcularGananciaTotalPorFecha(fechaInicio, fechaFin);
         return ResponseEntity.ok(new GananciaTotalDto(gananciaTotal));
     }
+
+    @GetMapping("/estadisticas/forma-pago")
+    public ResponseEntity<List<FormaPagoEstadisticaDto>> getEstadisticaFormaPago() {
+        return ResponseEntity.ok(ordenService.obtenerEstadisticaPorFormaPago());
+    }
+
 
     private void asignarDatosOrden(Orden orden, OrdenDto ordenDto) {
         orden.setFecha(ordenDto.getFecha());
@@ -161,4 +189,49 @@ public class OrdenController {
         dto.setDetalles(detalles);
         return dto;
     }
+
+    // Filtrar por ID de cliente
+    @GetMapping("/filter/cliente/{clienteId}")
+    public ResponseEntity<List<OrdenResponseDto>> getOrdenesByCliente(@PathVariable Integer clienteId) {
+        List<OrdenResponseDto> ordenes = ordenService.getOrdenesByClienteId(clienteId)
+                .stream()
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(ordenes);
+    }
+
+    // Filtrar por ID de empleado
+    @GetMapping("/filter/empleado/{empleadoId}")
+    public ResponseEntity<List<OrdenResponseDto>> getOrdenesByEmpleado(@PathVariable Integer empleadoId) {
+        List<OrdenResponseDto> ordenes = ordenService.getOrdenesByEmpleadoId(empleadoId)
+                .stream()
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(ordenes);
+    }
+
+    // Filtrar por rango de fechas
+    @GetMapping("/filter/fechas")
+    public ResponseEntity<List<OrdenResponseDto>> getOrdenesByFecha(
+            @RequestParam LocalDate fechaInicio,
+            @RequestParam LocalDate fechaFin) {
+        List<OrdenResponseDto> ordenes = ordenService.getOrdenesByFechaRange(fechaInicio, fechaFin)
+                .stream()
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(ordenes);
+    }
+
+    // Filtrar por precio total (mínimo y máximo)
+    @GetMapping("/filter/precio")
+    public ResponseEntity<List<OrdenResponseDto>> getOrdenesByPrecio(
+            @RequestParam BigDecimal min,
+            @RequestParam BigDecimal max) {
+        List<OrdenResponseDto> ordenes = ordenService.getOrdenesByPrecioTotalRange(min, max)
+                .stream()
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(ordenes);
+    }
+
 }

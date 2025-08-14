@@ -88,7 +88,7 @@ export function initDashboard(container) {
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Ventas por categoría</h5>
+                                <h5 class="card-title">Preferencias de Pago de Clientes</h5>
                                 <canvas id="salesByCategoryChart"></canvas>
                             </div>
                         </div>
@@ -131,7 +131,8 @@ function fetchDashboardData() {
     obtenerGananciaTotal(fechaInicio, fechaFin);
 
     createTopSellingProductsChart();
-    createSalesByCategoryChart();
+    createSalesByPaymentMethodChart();
+
 }
 
 function updateSystemSummary() {
@@ -301,28 +302,55 @@ function createTopSellingProductsChart() {
     });
 }
 
-function createSalesByCategoryChart() {
+function createSalesByPaymentMethodChart() {
     const ctx = document.getElementById('salesByCategoryChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['Category A', 'Category B', 'Category C', 'Category D'],
-            datasets: [{
-                data: [30, 50, 20, 10],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                    'rgba(75, 192, 192, 0.6)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)'
-                ],
-                borderWidth: 1
-            }]
+    const token = localStorage.getItem('token');
+
+    fetch('http://localhost:8080/api/ordenes/estadisticas/forma-pago', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
         }
-    });
+    })
+    .then(res => res.json())
+    .then(data => {
+        // data es un array de objetos { formaPago, cantidad }
+        const labels = data.map(d => d.formaPago);
+        const cantidades = data.map(d => d.cantidad);
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: cantidades,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Órdenes por Forma de Pago' }
+                }
+            }
+        });
+    })
+    .catch(error => console.error('Error al obtener estadísticas por forma de pago:', error));
 }

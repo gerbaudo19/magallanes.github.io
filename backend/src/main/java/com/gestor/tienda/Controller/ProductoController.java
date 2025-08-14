@@ -160,4 +160,49 @@ public class ProductoController {
     public List<ProductoEstadisticasDto> obtenerProductosMasVendidos() {
         return productoService.obtenerProductosMasVendidos();
     }
+
+    // Buscar producto por nombre (puede devolver varios)
+    @GetMapping("/listByNombre/{nombre}")
+    public ResponseEntity<List<Producto>> findByNombre(@PathVariable String nombre) {
+        try {
+            List<Producto> productos = productoService.findByNombre(nombre);
+            return new ResponseEntity<>(productos, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // Buscar producto por marca
+    @GetMapping("/listByMarca/{marca}")
+    public ResponseEntity<List<Producto>> findByMarca(@PathVariable String marca) {
+        try {
+            List<Producto> productos = productoService.findByMarca(marca);
+            return new ResponseEntity<>(productos, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // Buscar producto por color
+    @GetMapping("/listByColor/{color}")
+    public ResponseEntity<List<Producto>> findByColor(@PathVariable String color) {
+        try {
+            List<Producto> productos = productoService.findByColor(color);
+            return new ResponseEntity<>(productos, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // Buscar producto por ID (ya lo tenés, solo para referencia)
+    @GetMapping("/listById/{id}")
+    public ResponseEntity<Optional<Producto>> findById(@PathVariable long id) {
+        try {
+            Optional<Producto> producto = productoService.getProductoById(id);
+            return new ResponseEntity<>(producto, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
