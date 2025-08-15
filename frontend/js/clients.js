@@ -270,11 +270,11 @@ function createAddClientModal() {
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="clientDni" class="form-label">DNI *</label>
-                                    <input type="text" class="form-control" id="clientDni" name="dni" required>
+                                    <input type="number" class="form-control" id="clientDni" name="dni" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="clientPhone" class="form-label">Teléfono</label>
-                                    <input type="text" class="form-control" id="clientPhone" name="telefono">
+                                    <input type="number" class="form-control" id="clientPhone" name="telefono">
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -325,11 +325,11 @@ function createEditClientModal() {
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="editClientDni" class="form-label">DNI *</label>
-                                    <input type="text" class="form-control" id="editClientDni" name="dni" required>
+                                    <input type="number" class="form-control" id="editClientDni" name="dni" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="editClientPhone" class="form-label">Teléfono</label>
-                                    <input type="text" class="form-control" id="editClientPhone" name="telefono">
+                                    <input type="number" class="form-control" id="editClientPhone" name="telefono">
                                 </div>
                             </div>
                             <div class="mb-3">

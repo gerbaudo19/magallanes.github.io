@@ -270,11 +270,11 @@ function createAddEmployeeModal() {
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="employeeDni" class="form-label">DNI *</label>
-                                    <input type="text" class="form-control" id="employeeDni" name="dni" required>
+                                    <input type="number" class="form-control" id="employeeDni" name="dni" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="employeePhone" class="form-label">Teléfono</label>
-                                    <input type="text" class="form-control" id="employeePhone" name="telefono">
+                                    <input type="number" class="form-control" id="employeePhone" name="telefono">
                                 </div>
                             </div>
                             <div class="row">
@@ -345,11 +345,11 @@ function createEditEmployeeModal() {
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="editEmployeeDni" class="form-label">DNI *</label>
-                                    <input type="text" class="form-control" id="editEmployeeDni" name="dni" required>
+                                    <input type="number" class="form-control" id="editEmployeeDni" name="dni" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="editEmployeePhone" class="form-label">Teléfono</label>
-                                    <input type="text" class="form-control" id="editEmployeePhone" name="telefono">
+                                    <input type="number" class="form-control" id="editEmployeePhone" name="telefono">
                                 </div>
                             </div>
                             <div class="row">
