@@ -25,6 +25,9 @@ public class DetalleOrdenDto {
 
     @NotNull
     private BigDecimal precioDetalle; 
+
+    @NotNull
+    private String talle;
 }
 
 

@@ -35,12 +35,14 @@ public class DetalleOrden {
 
     private int cantidad;
     private BigDecimal precioDetalle; // Cambiado a BigDecimal
+    private String talle; // NUEVO CAMPO
 
     // Constructor
-    public DetalleOrden(Orden orden, Producto producto, int cantidad) {
+    public DetalleOrden(Orden orden, Producto producto, int cantidad, String talle) {
         this.orden = orden;
         this.producto = producto;
         this.cantidad = cantidad;
+        this.talle = talle;
         this.precioDetalle = producto.getPrecio().multiply(BigDecimal.valueOf(cantidad));
     }
 
@@ -49,5 +51,4 @@ public class DetalleOrden {
         return this.producto.getId(); // Asegúrate de que `getId()` esté definido en la clase `Producto`
     }
 }
-
 

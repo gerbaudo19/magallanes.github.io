@@ -35,6 +35,7 @@ import com.gestor.tienda.Entity.FormaPago;
 import com.gestor.tienda.Entity.Orden;
 import com.gestor.tienda.Entity.Producto;
 import com.gestor.tienda.Entity.Rol;
+import com.gestor.tienda.Service.MovimientoStockService;
 import com.gestor.tienda.Service.OrdenService;
 import com.gestor.tienda.Service.ProductoService;
 
@@ -47,6 +48,9 @@ public class OrdenController {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private MovimientoStockService movimientoStockService;
 
     @GetMapping
     public List<OrdenResponseDto> getAllOrdenes() {
@@ -114,8 +118,8 @@ public class OrdenController {
 
 
     private void asignarDatosOrden(Orden orden, OrdenDto ordenDto) {
-        orden.setFecha(ordenDto.getFecha());
-        orden.setHora(ordenDto.getHora());
+    orden.setFecha(ordenDto.getFecha());
+    orden.setHora(ordenDto.getHora());
 
         Cliente cliente = new Cliente();
         cliente.setId(ordenDto.getClienteId());
@@ -138,12 +142,28 @@ public class OrdenController {
             Producto producto = productoService.getProductoById(detalleDto.getProductoId())
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + detalleDto.getProductoId()));
 
+            String talle = detalleDto.getTalle();
+            int cantidad = detalleDto.getCantidad();
+
+            // Verificar stock suficiente
+            if (producto.getStockPorTalle(talle) < cantidad) {
+                throw new RuntimeException("Stock insuficiente para producto " + producto.getNombre() + " talle " + talle);
+            }
+
+            // Reducir stock
+            producto.reducirStock(talle, cantidad);
+            productoService.saveProducto(producto);
+
+            // Registrar movimiento de stock
+            movimientoStockService.registrarMovimiento("SALIDA", talle, cantidad, producto);
+
+            // Crear detalle de orden
             DetalleOrden detalleOrden = new DetalleOrden();
             detalleOrden.setProducto(producto);
-            detalleOrden.setCantidad(detalleDto.getCantidad());
-            detalleOrden.setPrecioDetalle(producto.getPrecio()
-                    .multiply(BigDecimal.valueOf(detalleOrden.getCantidad())));
+            detalleOrden.setCantidad(cantidad);
+            detalleOrden.setPrecioDetalle(producto.getPrecio().multiply(BigDecimal.valueOf(cantidad)));
             detalleOrden.setOrden(orden);
+            detalleOrden.setTalle(talle); // Necesitarás agregar el campo talle en DetalleOrden
             orden.getDetallesOrden().add(detalleOrden);
         }
 

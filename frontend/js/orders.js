@@ -354,14 +354,27 @@ function updateEmployeeDropdown() {
 }
 
 function updateProductDropdown() {
-    const productSelect = document.getElementById('orderProducts');
-    const editProductSelect = document.getElementById('editOrderProducts');
-    const options = products.map(product => 
-        `<option value="${product.id}">${product.nombre} - $${product.precio.toFixed(2)}</option>`
-    ).join('');
+    // Esta función ahora se maneja dinámicamente en addProductToOrder y addProductToEditOrder
+    // ya que necesitamos mostrar los talles disponibles para cada producto
+}
+
+// Función para generar opciones de productos con talles
+function generateProductTalleOptions(selectedProductId = '', selectedTalle = '') {
+    let options = '<option value="">Seleccionar producto y talle</option>';
     
-    if (productSelect) productSelect.innerHTML = options;
-    if (editProductSelect) editProductSelect.innerHTML = options;
+    products.forEach(product => {
+        if (product.stockPorTalle && Object.keys(product.stockPorTalle).length > 0) {
+            Object.entries(product.stockPorTalle).forEach(([talle, stock]) => {
+                if (stock > 0) { // Solo mostrar talles con stock disponible
+                    const value = `${product.id}|${talle}`;
+                    const selected = (product.id == selectedProductId && talle === selectedTalle) ? 'selected' : '';
+                    options += `<option value="${value}" ${selected}>${product.nombre} - ${talle} (Stock: ${stock}) - $${product.precio.toFixed(2)}</option>`;
+                }
+            });
+        }
+    });
+    
+    return options;
 }
 
 function createOrderModals() {
@@ -546,12 +559,14 @@ function setupOrderEventListeners() {
                 detallesOrden: []
             };
 
-            const productoIds = formData.getAll('productoId[]');
+            const productoTalles = formData.getAll('productoTalle[]');
             const cantidades = formData.getAll('cantidad[]');
 
-            for (let i = 0; i < productoIds.length; i++) {
+            for (let i = 0; i < productoTalles.length; i++) {
+                const [productoId, talle] = productoTalles[i].split('|');
                 requestBody.detallesOrden.push({
-                    productoId: parseInt(productoIds[i]),
+                    productoId: parseInt(productoId),
+                    talle: talle,
                     cantidad: parseInt(cantidades[i])
                 });
             }
@@ -572,8 +587,11 @@ function setupOrderEventListeners() {
                         modal.hide();
                     }
                     fetchOrders();
+                    fetchProducts(); // Refrescar productos para actualizar stock
                 } else {
-                    alert('Error al agregar la orden');
+                    response.text().then(text => {
+                        alert('Error al agregar la orden: ' + text);
+                    });
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -597,12 +615,14 @@ function setupOrderEventListeners() {
                 detallesOrden: []
             };
 
-            const productoIds = formData.getAll('productoId[]');
+            const productoTalles = formData.getAll('productoTalle[]');
             const cantidades = formData.getAll('cantidad[]');
 
-            for (let i = 0; i < productoIds.length; i++) {
+            for (let i = 0; i < productoTalles.length; i++) {
+                const [productoId, talle] = productoTalles[i].split('|');
                 requestBody.detallesOrden.push({
-                    productoId: parseInt(productoIds[i]),
+                    productoId: parseInt(productoId),
+                    talle: talle,
                     cantidad: parseInt(cantidades[i])
                 });
             }
@@ -623,8 +643,11 @@ function setupOrderEventListeners() {
                         modal.hide();
                     }
                     fetchOrders();
+                    fetchProducts(); // Refrescar productos para actualizar stock
                 } else {
-                    alert('Error al actualizar la orden');
+                    response.text().then(text => {
+                        alert('Error al actualizar la orden: ' + text);
+                    });
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -648,7 +671,8 @@ window.viewOrder = function(id) {
             productosInfo = order.detalles.map(detalle => {
                 const producto = products.find(p => p.id === detalle.productoId);
                 const nombreProducto = producto ? producto.nombre : `Producto ID: ${detalle.productoId}`;
-                return `<li>${nombreProducto} - Cantidad: ${detalle.cantidad} - Subtotal: $${detalle.precioDetalle.toFixed(2)}</li>`;
+                const talleInfo = detalle.talle ? ` - Talle: ${detalle.talle}` : '';
+                return `<li>${nombreProducto}${talleInfo} - Cantidad: ${detalle.cantidad} - Subtotal: $${detalle.precioDetalle.toFixed(2)}</li>`;
             }).join('');
         } else {
             productosInfo = '<li>No hay productos en esta orden</li>';
@@ -705,7 +729,7 @@ window.editOrder = function(id) {
     productContainer.innerHTML = '';
     if (order.detalles && order.detalles.length > 0) {
         order.detalles.forEach(detalle => {
-            addProductToEditOrder(detalle.productoId, detalle.cantidad);
+            addProductToEditOrder(detalle.productoId, detalle.talle, detalle.cantidad);
         });
     } else {
         addProductToEditOrder(); // Agregar al menos una fila vacía
@@ -742,27 +766,52 @@ window.deleteOrder = function(id) {
     }
 }
 
-window.addProductToOrder = function(productId = '', quantity = 1) {
+window.addProductToOrder = function(productId = '', talle = '', quantity = 1) {
     const container = document.getElementById('orderProductsContainer');
     const row = document.createElement('div');
     row.className = 'row mb-2 product-row';
     row.innerHTML = `
-        <div class="col-md-7">
-            <select class="form-select" name="productoId[]" required>
-                <option value="">Seleccionar producto</option>
-                ${products.map(product => `<option value="${product.id}" ${product.id == productId ? 'selected' : ''}>${product.nombre} - $${product.precio.toFixed(2)}</option>`).join('')}
+        <div class="col-md-6">
+            <select class="form-select" name="productoTalle[]" required>
+                ${generateProductTalleOptions(productId, talle)}
             </select>
         </div>
         <div class="col-md-3">
             <input type="number" class="form-control" name="cantidad[]" value="${quantity}" placeholder="Cantidad..." min="1" required>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <button type="button" class="btn btn-sm btn-danger" onclick="removeProductRow(this)">
                 <i class="bi bi-trash"></i>
             </button>
         </div>
     `;
     container.appendChild(row);
+    
+    // Agregar event listener para validar stock cuando cambie la cantidad
+    const quantityInput = row.querySelector('input[name="cantidad[]"]');
+    const productSelect = row.querySelector('select[name="productoTalle[]"]');
+    
+    function validateStock() {
+        const selectedValue = productSelect.value;
+        const quantity = parseInt(quantityInput.value) || 0;
+        
+        if (selectedValue && quantity > 0) {
+            const [productId, selectedTalle] = selectedValue.split('|');
+            const product = products.find(p => p.id == productId);
+            
+            if (product && product.stockPorTalle && product.stockPorTalle[selectedTalle]) {
+                const availableStock = product.stockPorTalle[selectedTalle];
+                
+                if (quantity > availableStock) {
+                    alert(`Stock insuficiente. Solo hay ${availableStock} unidades disponibles del talle ${selectedTalle}`);
+                    quantityInput.value = availableStock;
+                }
+            }
+        }
+    }
+    
+    quantityInput.addEventListener('change', validateStock);
+    productSelect.addEventListener('change', validateStock);
 }
 
 window.removeProductRow = function(button) {
@@ -770,25 +819,50 @@ window.removeProductRow = function(button) {
     row.remove();
 }
 
-window.addProductToEditOrder = function(productId = '', quantity = 1) {
+window.addProductToEditOrder = function(productId = '', talle = '', quantity = 1) {
     const container = document.getElementById('editOrderProductsContainer');
     const row = document.createElement('div');
     row.className = 'row mb-2 product-row';
     row.innerHTML = `
-        <div class="col-md-7">
-            <select class="form-select" name="productoId[]" required>
-                <option value="">Seleccionar producto</option>
-                ${products.map(product => `<option value="${product.id}" ${product.id == productId ? 'selected' : ''}>${product.nombre} - $${product.precio.toFixed(2)}</option>`).join('')}
+        <div class="col-md-6">
+            <select class="form-select" name="productoTalle[]" required>
+                ${generateProductTalleOptions(productId, talle)}
             </select>
         </div>
         <div class="col-md-3">
             <input type="number" class="form-control" name="cantidad[]" value="${quantity}" placeholder="Cantidad..." min="1" required>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <button type="button" class="btn btn-sm btn-danger" onclick="removeProductRow(this)">
                 <i class="bi bi-trash"></i>
             </button>
         </div>
     `;
     container.appendChild(row);
+    
+    // Agregar event listener para validar stock cuando cambie la cantidad
+    const quantityInput = row.querySelector('input[name="cantidad[]"]');
+    const productSelect = row.querySelector('select[name="productoTalle[]"]');
+    
+    function validateStock() {
+        const selectedValue = productSelect.value;
+        const quantity = parseInt(quantityInput.value) || 0;
+        
+        if (selectedValue && quantity > 0) {
+            const [productId, selectedTalle] = selectedValue.split('|');
+            const product = products.find(p => p.id == productId);
+            
+            if (product && product.stockPorTalle && product.stockPorTalle[selectedTalle]) {
+                const availableStock = product.stockPorTalle[selectedTalle];
+                
+                if (quantity > availableStock) {
+                    alert(`Stock insuficiente. Solo hay ${availableStock} unidades disponibles del talle ${selectedTalle}`);
+                    quantityInput.value = availableStock;
+                }
+            }
+        }
+    }
+    
+    quantityInput.addEventListener('change', validateStock);
+    productSelect.addEventListener('change', validateStock);
 }
