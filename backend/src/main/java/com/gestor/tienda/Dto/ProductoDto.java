@@ -1,6 +1,7 @@
 package com.gestor.tienda.Dto;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,16 +14,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ProductoDto {
     @NotNull
-    private int  id;
+    private int id;
 
     @NotBlank
     private String nombre;
 
     @NotNull
     private BigDecimal precio;
-
-    @NotBlank
-    private String talle;
 
     @NotBlank
     private String color;
@@ -32,5 +30,6 @@ public class ProductoDto {
 
     @NotNull
     private Long tipoPrendaId;
-}
 
+    private Map<String, Integer> stockPorTalle; 
+}

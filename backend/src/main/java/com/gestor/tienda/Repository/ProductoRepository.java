@@ -18,4 +18,9 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
            "GROUP BY p.id, p.nombre " +
            "ORDER BY SUM(d.cantidad) DESC")
     List<ProductoEstadisticasDto> findProductosMasVendidos();
+
+    // Filtros simples por nombre, marca y color
+    List<Producto> findByNombreContainingIgnoreCase(String nombre);
+    List<Producto> findByMarcaIgnoreCase(String marca);
+    List<Producto> findByColorIgnoreCase(String color);
 }

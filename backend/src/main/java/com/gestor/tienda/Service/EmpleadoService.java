@@ -46,4 +46,9 @@ public class EmpleadoService {
     public void deleteById(int id) {
         empleadoRepository.deleteById(id);
     }
+
+    public List<Empleado> findByDni(String dni) {
+    return empleadoRepository.findByDniContaining(dni);
+    }
+
 }

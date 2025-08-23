@@ -15,5 +15,6 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, Integer> {
     List<Empleado> findByNombre(String nombre);
     Boolean existsByDni(String dni);
     Optional<Empleado> findByUsername(String username);
+    List<Empleado> findByDniContaining(String dni);
 }
 

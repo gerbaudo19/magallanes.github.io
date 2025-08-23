@@ -44,4 +44,20 @@ public class ProductoService {
     public List<ProductoEstadisticasDto> obtenerProductosMasVendidos() {
         return productoRepository.findProductosMasVendidos();
     }
+
+    // Buscar productos por nombre (contenga el texto, sin importar mayúsculas/minúsculas)
+    public List<Producto> findByNombre(String nombre) {
+        return productoRepository.findByNombreContainingIgnoreCase(nombre);
+    }
+
+    // Buscar productos por marca (exacta o ignorando mayúsculas)
+    public List<Producto> findByMarca(String marca) {
+        return productoRepository.findByMarcaIgnoreCase(marca);
+    }
+
+    // Buscar productos por color (exacta o ignorando mayúsculas)
+    public List<Producto> findByColor(String color) {
+        return productoRepository.findByColorIgnoreCase(color);
+    }
+
 }

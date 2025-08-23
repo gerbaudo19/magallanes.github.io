@@ -7,6 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,15 +46,8 @@ public class Empleado extends Persona implements UserDetails {
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @JsonIgnore // Ignora al serializar para evitar el error
     private Rol rol;
-
-    /*Atributos heredados de Persona (comentados para evitar duplicación)
-    private String nombre;
-    private String apellido;
-    private String dni;
-    private String telefono;
-    private String email;
-    private String domicilio;*/
 
     // Constructor con todos los parámetros
     public Empleado(String nombre, String apellido, String dni, String telefono, String email, String domicilio, String username, String password, Rol rol) {
@@ -64,27 +59,18 @@ public class Empleado extends Persona implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(rol.name()));
+        return List.of(new SimpleGrantedAuthority(rol != null ? rol.name() : "EMPLEADO"));
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    public boolean isEnabled() { return true; }
 }
-

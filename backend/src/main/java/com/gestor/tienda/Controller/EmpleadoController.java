@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable; // Asegúrate de importar la clase Rol
+import org.springframework.web.bind.annotation.PathVariable; 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -111,5 +111,10 @@ public class EmpleadoController {
 
         empleadoService.saveEmpleado(empleadoExistente);
         return new ResponseEntity<>("Empleado actualizado exitosamente.", HttpStatus.OK);
+    }
+
+    @GetMapping("/dni/{dni}")
+    public List<Empleado> getEmpleadosByDni(@PathVariable String dni) {
+        return empleadoService.findByDni(dni);
     }
 }

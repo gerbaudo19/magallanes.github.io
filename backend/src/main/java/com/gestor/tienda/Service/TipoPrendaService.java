@@ -37,4 +37,9 @@ public class TipoPrendaService {
     public void deleteTipoPrenda(Long id) {
         tipoPrendaRepository.deleteById(id);
     }
+
+    public List<TipoPrenda> getTipoPrendasByNombre(String nombre) {
+    return tipoPrendaRepository.findByNombreContainingIgnoreCase(nombre);
+    }
+
 }

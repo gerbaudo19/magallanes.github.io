@@ -1,13 +1,10 @@
 package com.gestor.tienda.Entity;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,8 +19,7 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String nombre;
-    private BigDecimal precio; // Cambiado a BigDecimal
-    private String talle;
+    private BigDecimal precio;
     private String color;
     private String marca;
 
@@ -31,13 +27,29 @@ public class Producto {
     @JoinColumn(name = "tipo_prenda_id")
     private TipoPrenda tipoPrenda;
 
-    // Constructor
-    public Producto(String nombre, BigDecimal precio, String talle, String color, String marca, TipoPrenda tipoPrenda) {
+    @ElementCollection
+    @CollectionTable(name = "stock_por_talle", joinColumns = @JoinColumn(name = "producto_id"))
+    @MapKeyColumn(name = "talle")
+    @Column(name = "cantidad")
+    private Map<String, Integer> stockPorTalle = new HashMap<>();
+
+    public Producto(String nombre, BigDecimal precio, String color, String marca, TipoPrenda tipoPrenda) {
         this.nombre = nombre;
         this.precio = precio;
-        this.talle = talle;
         this.color = color;
         this.marca = marca;
         this.tipoPrenda = tipoPrenda;
+    }
+
+    public int getStockPorTalle(String talle) {
+        return stockPorTalle.getOrDefault(talle, 0);
+    }
+
+    public void agregarStock(String talle, int cantidad) {
+        stockPorTalle.put(talle, getStockPorTalle(talle) + cantidad);
+    }
+
+    public void reducirStock(String talle, int cantidad) {
+        stockPorTalle.put(talle, getStockPorTalle(talle) - cantidad);
     }
 }
