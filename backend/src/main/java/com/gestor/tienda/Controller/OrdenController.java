@@ -80,28 +80,60 @@ public class OrdenController {
 
     @PutMapping("/{id}")
     public ResponseEntity<OrdenResponseDto> updateOrden(@PathVariable Integer id, @RequestBody OrdenDto ordenDto) {
-        if (!ordenService.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        try {
-            Orden orden = ordenService.getOrdenById(id).get();
-            orden.getDetallesOrden().clear();
-            asignarDatosOrden(orden, ordenDto);
-            Orden updatedOrden = ordenService.saveOrden(orden);
-            return ResponseEntity.ok(mapToResponseDto(updatedOrden));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    if (!ordenService.existsById(id)) {
+        return ResponseEntity.notFound().build();
     }
+    try {
+        Orden orden = ordenService.getOrdenById(id).get();
+
+        // 🔹 Restaurar stock de los detalles anteriores
+        for (DetalleOrden detalle : orden.getDetallesOrden()) {
+            Producto producto = detalle.getProducto();
+            producto.agregarStock(detalle.getTalle(), detalle.getCantidad());
+            productoService.saveProducto(producto);
+
+            movimientoStockService.registrarMovimiento("ENTRADA", detalle.getTalle(), detalle.getCantidad(), producto);
+        }
+
+        // 🔹 Limpiar los detalles
+        orden.getDetallesOrden().clear();
+
+        // 🔹 Asignar los nuevos detalles (aquí se vuelve a descontar)
+        asignarDatosOrden(orden, ordenDto);
+
+        Orden updatedOrden = ordenService.saveOrden(orden);
+        return ResponseEntity.ok(mapToResponseDto(updatedOrden));
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+    }
+
+
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrden(@PathVariable Integer id) {
-        if (ordenService.existsById(id)) {
-            ordenService.deleteOrden(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    if (ordenService.existsById(id)) {
+        Orden orden = ordenService.getOrdenById(id).get();
+
+        // 🔹 devolver stock de todos los productos de la orden
+        for (DetalleOrden detalle : orden.getDetallesOrden()) {
+            Producto producto = detalle.getProducto();
+            String talle = detalle.getTalle();
+            int cantidad = detalle.getCantidad();
+
+            producto.agregarStock(talle, cantidad);
+            productoService.saveProducto(producto);
+
+            movimientoStockService.registrarMovimiento("ENTRADA", talle, cantidad, producto);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        ordenService.deleteOrden(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
 
     @GetMapping("/ganancia-total")
     public ResponseEntity<GananciaTotalDto> calcularGananciaTotal(

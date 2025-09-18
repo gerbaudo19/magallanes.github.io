@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gestor.tienda.Dto.ProductoDto;
 import com.gestor.tienda.Dto.ProductoEstadisticasDto;
+import com.gestor.tienda.Dto.StockInsuficienteDto;
 import com.gestor.tienda.Entity.Producto;
 import com.gestor.tienda.Entity.TipoPrenda;
 import com.gestor.tienda.Service.MovimientoStockService;
@@ -203,6 +204,13 @@ public class ProductoController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    // Reporte Stock Induficiente
+    @GetMapping("/stock/insuficiente")
+    public ResponseEntity<List<StockInsuficienteDto>> getStockInsuficiente() {
+        List<StockInsuficienteDto> reporte = productoService.obtenerStockInsuficiente();
+        return new ResponseEntity<>(reporte, HttpStatus.OK);
     }
 
 }

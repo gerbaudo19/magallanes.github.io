@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.gestor.tienda.PruebasDeIntegracion.AuthControllerIntegrationTest" time="29.502" tests="3" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.gestor.tienda.Service.ClienteServiceTest" time="1.75" tests="8" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -63,167 +63,12 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="testLoginSuccess" classname="com.gestor.tienda.PruebasDeIntegracion.AuthControllerIntegrationTest" time="3.213">
-    <system-out><![CDATA[17:10:31.267 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.gestor.tienda.PruebasDeIntegracion.AuthControllerIntegrationTest]: AuthControllerIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-17:10:31.665 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.gestor.tienda.TiendaApplication for test class com.gestor.tienda.PruebasDeIntegracion.AuthControllerIntegrationTest
-17:10:32.165 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
-
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
-
- :: Spring Boot ::               (v3.3.13)
-
-2025-09-16T17:10:33.037-03:00  INFO 9976 --- [           main] c.g.t.P.AuthControllerIntegrationTest    : Starting AuthControllerIntegrationTest using Java 17.0.11 with PID 9976 (started by Usuario in C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend)
-2025-09-16T17:10:33.042-03:00  INFO 9976 --- [           main] c.g.t.P.AuthControllerIntegrationTest    : No active profile set, falling back to 1 default profile: "default"
-2025-09-16T17:10:36.065-03:00  INFO 9976 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-09-16T17:10:36.319-03:00  INFO 9976 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 228 ms. Found 8 JPA repository interfaces.
-2025-09-16T17:10:38.099-03:00  INFO 9976 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-09-16T17:10:38.457-03:00  INFO 9976 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
-2025-09-16T17:10:38.600-03:00  INFO 9976 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2025-09-16T17:10:40.322-03:00  INFO 9976 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-09-16T17:10:40.464-03:00  INFO 9976 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2025-09-16T17:10:41.292-03:00  INFO 9976 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7a3a49e5
-2025-09-16T17:10:41.301-03:00  INFO 9976 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2025-09-16T17:10:41.582-03:00  WARN 9976 --- [           main] org.hibernate.dialect.Dialect            : HHH000511: The 5.5.5 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
-2025-09-16T17:10:46.868-03:00  INFO 9976 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-09-16T17:10:47.293-03:00  INFO 9976 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-09-16T17:10:48.760-03:00  INFO 9976 --- [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
-2025-09-16T17:10:48.761-03:00  WARN 9976 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
-Hibernate: select count(*) from forma_pago fp1_0
-2025-09-16T17:10:50.624-03:00  INFO 9976 --- [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-09-16T17:10:52.336-03:00  WARN 9976 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2025-09-16T17:10:53.754-03:00  INFO 9976 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
-2025-09-16T17:10:55.481-03:00  INFO 9976 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2025-09-16T17:10:55.481-03:00  INFO 9976 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2025-09-16T17:10:55.484-03:00  INFO 9976 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
-2025-09-16T17:10:55.756-03:00  INFO 9976 --- [           main] c.g.t.P.AuthControllerIntegrationTest    : Started AuthControllerIntegrationTest in 23.634 seconds (process running for 26.773)
-Hibernate: select e1_0.id from empleado e1_0 where e1_0.dni=? limit ?
-Hibernate: select e1_0.id from empleado e1_0 where e1_0.dni=? limit ?
-Hibernate: select e1_0.id,e1_0.apellido,e1_0.dni,e1_0.domicilio,e1_0.email,e1_0.nombre,e1_0.password,e1_0.rol,e1_0.telefono,e1_0.username from empleado e1_0 where e1_0.username=?
-Hibernate: select e1_0.id,e1_0.apellido,e1_0.dni,e1_0.domicilio,e1_0.email,e1_0.nombre,e1_0.password,e1_0.rol,e1_0.telefono,e1_0.username from empleado e1_0 where e1_0.username=?
-
-MockHttpServletRequest:
-      HTTP Method = POST
-      Request URI = /auth/login
-       Parameters = {}
-          Headers = [Content-Type:"application/json;charset=UTF-8", Content-Length:"42"]
-             Body = {"username":"admin","password":"admin123"}
-    Session Attrs = {}
-
-Handler:
-             Type = com.gestor.tienda.Auth.AuthController
-           Method = com.gestor.tienda.Auth.AuthController#login(LoginRequest)
-
-Async:
-    Async started = false
-     Async result = null
-
-Resolved Exception:
-             Type = null
-
-ModelAndView:
-        View name = null
-             View = null
-            Model = null
-
-FlashMap:
-       Attributes = null
-
-MockHttpServletResponse:
-           Status = 200
-    Error message = null
-          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Authorization:"Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1ODA1MzQ1OSwiZXhwIjoxNzU4MDU0ODk5fQ.gSLZkTxZb3tnjqYfJp9nq3UgnAuSA1cL5SQYevH95oA", Content-Type:"text/plain;charset=UTF-8", Content-Length:"131", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
-     Content type = text/plain;charset=UTF-8
-             Body = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1ODA1MzQ1OSwiZXhwIjoxNzU4MDU0ODk5fQ.gSLZkTxZb3tnjqYfJp9nq3UgnAuSA1cL5SQYevH95oA
-    Forwarded URL = null
-   Redirected URL = null
-          Cookies = []
-]]></system-out>
-  </testcase>
-  <testcase name="testLoginUserNotFound" classname="com.gestor.tienda.PruebasDeIntegracion.AuthControllerIntegrationTest" time="0.438">
-    <system-out><![CDATA[Hibernate: select e1_0.id,e1_0.apellido,e1_0.dni,e1_0.domicilio,e1_0.email,e1_0.nombre,e1_0.password,e1_0.rol,e1_0.telefono,e1_0.username from empleado e1_0 where e1_0.username=?
-
-MockHttpServletRequest:
-      HTTP Method = POST
-      Request URI = /auth/login
-       Parameters = {}
-          Headers = [Content-Type:"application/json;charset=UTF-8", Content-Length:"52"]
-             Body = {"username":"nonexistentuser","password":"password"}
-    Session Attrs = {}
-
-Handler:
-             Type = com.gestor.tienda.Auth.AuthController
-           Method = com.gestor.tienda.Auth.AuthController#login(LoginRequest)
-
-Async:
-    Async started = false
-     Async result = null
-
-Resolved Exception:
-             Type = null
-
-ModelAndView:
-        View name = null
-             View = null
-            Model = null
-
-FlashMap:
-       Attributes = null
-
-MockHttpServletResponse:
-           Status = 401
-    Error message = null
-          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Content-Type:"text/plain;charset=UTF-8", Content-Length:"23", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
-     Content type = text/plain;charset=UTF-8
-             Body = Credenciales inválidas
-    Forwarded URL = null
-   Redirected URL = null
-          Cookies = []
-]]></system-out>
-  </testcase>
-  <testcase name="testLoginInvalidCredentials" classname="com.gestor.tienda.PruebasDeIntegracion.AuthControllerIntegrationTest" time="0.266">
-    <system-out><![CDATA[Hibernate: select e1_0.id,e1_0.apellido,e1_0.dni,e1_0.domicilio,e1_0.email,e1_0.nombre,e1_0.password,e1_0.rol,e1_0.telefono,e1_0.username from empleado e1_0 where e1_0.username=?
-
-MockHttpServletRequest:
-      HTTP Method = POST
-      Request URI = /auth/login
-       Parameters = {}
-          Headers = [Content-Type:"application/json;charset=UTF-8", Content-Length:"47"]
-             Body = {"username":"admin","password":"wrongpassword"}
-    Session Attrs = {}
-
-Handler:
-             Type = com.gestor.tienda.Auth.AuthController
-           Method = com.gestor.tienda.Auth.AuthController#login(LoginRequest)
-
-Async:
-    Async started = false
-     Async result = null
-
-Resolved Exception:
-             Type = null
-
-ModelAndView:
-        View name = null
-             View = null
-            Model = null
-
-FlashMap:
-       Attributes = null
-
-MockHttpServletResponse:
-           Status = 401
-    Error message = null
-          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Content-Type:"text/plain;charset=UTF-8", Content-Length:"23", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
-     Content type = text/plain;charset=UTF-8
-             Body = Credenciales inválidas
-    Forwarded URL = null
-   Redirected URL = null
-          Cookies = []
-]]></system-out>
-  </testcase>
+  <testcase name="testFindByNombre" classname="com.gestor.tienda.Service.ClienteServiceTest" time="1.616"/>
+  <testcase name="testFindAll" classname="com.gestor.tienda.Service.ClienteServiceTest" time="0.015"/>
+  <testcase name="testSave" classname="com.gestor.tienda.Service.ClienteServiceTest" time="0.011"/>
+  <testcase name="testExistsById" classname="com.gestor.tienda.Service.ClienteServiceTest" time="0.018"/>
+  <testcase name="testFindById" classname="com.gestor.tienda.Service.ClienteServiceTest" time="0.013"/>
+  <testcase name="testDeleteById" classname="com.gestor.tienda.Service.ClienteServiceTest" time="0.011"/>
+  <testcase name="testFindByDni" classname="com.gestor.tienda.Service.ClienteServiceTest" time="0.011"/>
+  <testcase name="testExistsByDni" classname="com.gestor.tienda.Service.ClienteServiceTest" time="0.012"/>
 </testsuite>

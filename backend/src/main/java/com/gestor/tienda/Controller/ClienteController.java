@@ -43,8 +43,9 @@ public class ClienteController {
         clienteDto.getDni().isBlank() ||
         clienteService.existsByDni(dniClienteNuevo)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            
-        }else{
+
+        }
+        else{
 
             Cliente clienteNuevo = new Cliente(
             clienteDto.getNombre(),

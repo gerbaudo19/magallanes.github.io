@@ -15,10 +15,13 @@ C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\mai
 C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Controller\TipoPrendaController.java
 C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Dto\ClienteDto.java
 C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Dto\DetalleOrdenDto.java
+C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Dto\DetalleOrdenResponseDto.java
 C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Dto\EmpleadoDto.java
 C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Dto\FormaPagoDto.java
+C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Dto\FormaPagoEstadisticaDto.java
 C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Dto\GananciaTotalDto.java
 C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Dto\OrdenDto.java
+C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Dto\OrdenResponseDto.java
 C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Dto\ProductoDto.java
 C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Dto\ProductoEstadisticasDto.java
 C:\Users\Usuario\OneDrive\Documentos\GitHub\magallanes.github.io\backend\src\main\java\com\gestor\tienda\Dto\TipoPrendaDto.java

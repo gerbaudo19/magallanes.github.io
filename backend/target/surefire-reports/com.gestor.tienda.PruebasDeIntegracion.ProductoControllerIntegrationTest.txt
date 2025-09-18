@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest
 -------------------------------------------------------------------------------
-Tests run: 3, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 12.70 s <<< FAILURE! -- in com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest
-com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.testGetProductoNotFound -- Time elapsed: 0.863 s <<< FAILURE!
+Tests run: 3, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.211 s <<< FAILURE! -- in com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest
+com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.testGetProductoNotFound -- Time elapsed: 0.051 s <<< FAILURE!
 java.lang.AssertionError: Status expected:<404> but was:<403>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
@@ -13,7 +13,7 @@ java.lang.AssertionError: Status expected:<404> but was:<403>
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 
-com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.testCrearProductoSuccess -- Time elapsed: 0.079 s <<< FAILURE!
+com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.testCrearProductoSuccess -- Time elapsed: 0.081 s <<< FAILURE!
 java.lang.AssertionError: Status expected:<200> but was:<403>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
@@ -24,7 +24,7 @@ java.lang.AssertionError: Status expected:<200> but was:<403>
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 
-com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.testGetAllProductos -- Time elapsed: 0.021 s <<< FAILURE!
+com.gestor.tienda.PruebasDeIntegracion.ProductoControllerIntegrationTest.testGetAllProductos -- Time elapsed: 0.038 s <<< FAILURE!
 java.lang.AssertionError: Status expected:<200> but was:<403>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
