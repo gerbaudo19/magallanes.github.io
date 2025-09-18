@@ -1,12 +1,15 @@
 package com.gestor.tienda.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gestor.tienda.Dto.ProductoEstadisticasDto;
+import com.gestor.tienda.Dto.StockInsuficienteDto;
 import com.gestor.tienda.Entity.Producto;
 import com.gestor.tienda.Repository.ProductoRepository;
 
@@ -58,6 +61,31 @@ public class ProductoService {
     // Buscar productos por color (exacta o ignorando mayúsculas)
     public List<Producto> findByColor(String color) {
         return productoRepository.findByColorIgnoreCase(color);
+    }
+    
+    // Reporte de stock insuficiente
+    public List<StockInsuficienteDto> obtenerStockInsuficiente() {
+    List<Producto> productos = productoRepository.findAll();
+    List<StockInsuficienteDto> insuficientes = new ArrayList<>();
+
+    for (Producto producto : productos) {
+        for (Map.Entry<String, Integer> entry : producto.getStockPorTalle().entrySet()) {
+            if (entry.getValue() <= 5) {
+                insuficientes.add(
+                    new StockInsuficienteDto(
+                        producto.getId(),
+                        producto.getNombre(),
+                        producto.getMarca(),
+                        producto.getColor(),
+                        producto.getTipoPrenda() != null ? producto.getTipoPrenda().getNombre() : null,
+                        entry.getKey(),  // talle
+                        entry.getValue() // cantidad
+                    )
+                );
+            }
+        }
+    }
+    return insuficientes;
     }
 
 }
