@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupNavigation();
     loadSection(currentSection);
     addLogoutButton();
+    setupExcelExport(); // 👈 Agregado para manejar el botón de exportación
 });
 
 function setupNavigation() {
@@ -63,12 +64,10 @@ function updateActiveNavLink(sectionName) {
     });
 }
 
-
 export function getAuthHeader() {
     const token = localStorage.getItem('token'); 
     return token ? { Authorization: `Bearer ${token}` } : {};
 }
-
 
 export function fetchData(url, callback) {
     fetch(url, {
@@ -99,7 +98,7 @@ export function handleFormSubmit(formId, urlOrFunc, method, successMessage, succ
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
-                    ...getAuthHeader() // Incluye el encabezado de autorización
+                    ...getAuthHeader()
                 },
                 body: JSON.stringify(jsonData)
             })
@@ -119,8 +118,6 @@ export function handleFormSubmit(formId, urlOrFunc, method, successMessage, succ
         });
     }
 }
-
-
 
 function addLogoutButton() {
     const navbarNav = document.querySelector('#navbarNav .navbar-nav');
@@ -143,4 +140,43 @@ function addLogoutButton() {
 function logout() {
     localStorage.removeItem('token');
     window.location.href = 'login.html';
+}
+
+/* =======================
+   📊 EXPORTAR EXCEL
+   ======================= */
+function setupExcelExport() {
+    const btnExportar = document.getElementById('btnDescargarExcel');
+    if (btnExportar) {
+        btnExportar.addEventListener('click', async () => {
+            try {
+                const response = await fetch("http://localhost:8080/api/movimientos/exportar", {
+                    method: "GET",
+                    headers: {
+                        ...getAuthHeader()
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Error al exportar el archivo");
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "movimientos_stock.xlsx";
+                document.body.appendChild(a);
+                a.click();
+
+                a.remove();
+                window.URL.revokeObjectURL(url);
+
+            } catch (error) {
+                console.error("Error exportando Excel:", error);
+                alert("No se pudo exportar el archivo.");
+            }
+        });
+    }
 }
